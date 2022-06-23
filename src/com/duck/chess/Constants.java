@@ -1,7 +1,7 @@
 package com.duck.chess;
 
 // Contains various constants for the board
-public class Constants {
+public final class Constants {
     /*
     COLORS
      */
@@ -41,4 +41,22 @@ public class Constants {
     public static final int PIECE_BLACK_KING = 12;
     // Upper bound of pieces
     public static final int PIECE_ALL = 13;
+
+    public static boolean isWhite(int pc) {
+        return pc > PIECE_NONE && pc <= PIECE_WHITE_KING;
+    }
+
+    public static boolean isBlack(int pc) {
+        return pc >= PIECE_BLACK_PAWN;
+    }
+
+    // Gets the type of the piece
+    public static int piece_type_of_piece(int pc) {
+        return (pc - 1) % 6 + 1;
+    }
+
+    // Gets the color of the piece
+    public static int color_of_piece(int pc) {
+        return (pc - 1) / 6;
+    }
 }
