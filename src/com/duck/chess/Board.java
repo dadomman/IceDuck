@@ -1,6 +1,18 @@
 package com.duck.chess;
 
 // 0x88 Representation of a chess board
+/*
+8 | 112 113 114 115 116 117 118 119
+7 | 096 097 098 099 100 101 102 103
+6 | 080 081 082 083 084 085 086 087
+5 | 064 065 066 067 068 069 070 071
+4 | 048 049 050 051 052 053 054 055
+3 | 032 033 034 035 036 037 038 039
+2 | 016 017 018 019 020 021 022 023
+1 | 000 001 002 003 004 005 006 007
+   ---------------------------------
+     A   B   C   D   E   F   G   H
+ */
 public class Board {
     // Board Declaration
     public int[] board = new int[128];
@@ -9,8 +21,106 @@ public class Board {
     // Castle rights, four bits KQkq
     public int castle_rights = 0b1111;
     // En Passant square
-    public Integer ep = null;
+    // Since EP square can never be 0 (must be on 3rd or 6th rank), we use 0 for NO_EP
+    public int ep = 0;
 
+    // Prettily print the board
+    /*
+        A B C D E F G H
+       -----------------
+    8 | r n b q k b n r | 8
+    7 | p p p p p p p p | 7
+    6 |                 | 6
+    5 |                 | 5
+    4 |                 | 4
+    3 |                 | 3
+    2 | P P P P P P P P | 2
+    1 | R N B Q K B N R | 1
+       -----------------
+        A B C D E F G H
+
+    Side to move: White
+     */
+    public void display() {
+        System.out.println("    A B C D E F G H");
+        System.out.println("   -----------------");
+        for (int i = 7; i >= 0; i--) {
+            System.out.print(Character.toUpperCase(Constants.RANKS[i]));
+            System.out.print(" | ");
+            for (int j = 0; j < 8; j++) {
+                System.out.print(Constants.PIECE_TO_CHAR[board[i * 16 + j]] + " ");
+            }
+            System.out.print("| ");
+            System.out.print(Character.toUpperCase(Constants.RANKS[i]));
+            System.out.println();
+        }
+        System.out.println("   -----------------");
+        System.out.println("    A B C D E F G H");
+
+        System.out.println();
+        System.out.println("Side to move: " + (side_to_move == Constants.COLOR_WHITE ? "White" : "Black"));
+    }
+
+    // Empty board
     public Board() {
+    }
+
+    // Parse FEN
+    public Board(String fen) {
+        var tokens = fen.split(" ");
+
+        var board_string = tokens[0];
+
+        var sq = Constants.A8;
+        var inc = 0;
+        for (var c : board_string.toCharArray()) {
+            if (sq < 0) {
+                break;
+            }
+            if (c == '/') {
+                sq -= 16;
+                inc = 0;
+            } else if (c >= '1' && c <= '8') {
+                inc += c - '0';
+            } else {
+                switch (c) {
+                    case 'P' -> board[sq + inc] = Constants.PIECE_WHITE_PAWN;
+                    case 'N' -> board[sq + inc] = Constants.PIECE_WHITE_KNIGHT;
+                    case 'B' -> board[sq + inc] = Constants.PIECE_WHITE_BISHOP;
+                    case 'R' -> board[sq + inc] = Constants.PIECE_WHITE_ROOK;
+                    case 'Q' -> board[sq + inc] = Constants.PIECE_WHITE_QUEEN;
+                    case 'K' -> board[sq + inc] = Constants.PIECE_WHITE_KING;
+                    case 'p' -> board[sq + inc] = Constants.PIECE_BLACK_PAWN;
+                    case 'n' -> board[sq + inc] = Constants.PIECE_BLACK_KNIGHT;
+                    case 'b' -> board[sq + inc] = Constants.PIECE_BLACK_BISHOP;
+                    case 'r' -> board[sq + inc] = Constants.PIECE_BLACK_ROOK;
+                    case 'q' -> board[sq + inc] = Constants.PIECE_BLACK_QUEEN;
+                    case 'k' -> board[sq + inc] = Constants.PIECE_BLACK_KING;
+                    default -> {
+                    }
+                }
+                inc++;
+            }
+        }
+
+        var color = tokens[1].charAt(0);
+        if (color == 'w') {
+            side_to_move = Constants.COLOR_WHITE;
+        } else {
+            side_to_move = Constants.COLOR_BLACK;
+        }
+
+        var castle_rights_string = tokens[2];
+        castle_rights = 0;
+        for (var c : castle_rights_string.toCharArray()) {
+            switch (c) {
+                case 'K' -> castle_rights |= Constants.CASTLE_WHITE_K;
+                case 'Q' -> castle_rights |= Constants.CASTLE_WHITE_Q;
+                case 'k' -> castle_rights |= Constants.CASTLE_BLACK_K;
+                case 'q' -> castle_rights |= Constants.CASTLE_BLACK_Q;
+                default -> {
+                }
+            }
+        }
     }
 }
