@@ -245,7 +245,7 @@ public class Board {
         				//Checks Down Left Diagonal
         				int bishDownL = i;
         				while (board[bishDownL] = 0) {
-        					bishDownR+=17;
+        					bishDownL+=17;
         					if(board[bishDownL] = 0){
         						System.out.println("B" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
         					}	
