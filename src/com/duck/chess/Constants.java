@@ -42,61 +42,14 @@ public final class Constants {
     public static final int PIECE_BLACK_KING = 12;
     // Upper bound of pieces
     public static final int PIECE_ALL = 13;
-
-    public static boolean isWhite(int pc) {
-        return pc > PIECE_NONE && pc <= PIECE_WHITE_KING;
-    }
-
-    public static boolean isBlack(int pc) {
-        return pc >= PIECE_BLACK_PAWN;
-    }
-
-    // Gets the type of the piece
-    public static int piece_type_of_piece(int pc) {
-        return (pc - 1) % 6 + 1;
-    }
-
-    // Gets the color of the piece
-    public static int color_of_piece(int pc) {
-        return (pc - 1) / 6;
-    }
-
-    // Castle right bits
-    public static int CASTLE_WHITE_K = 0b1000;
-    public static int CASTLE_WHITE_Q = 0b0100;
-    public static int CASTLE_BLACK_K = 0b0010;
-    public static int CASTLE_BLACK_Q = 0b0001;
-
     // File characters
     public static final char[] FILES = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-
     // Rank characters
     public static final char[] RANKS = new char[]{'1', '2', '3', '4', '5', '6', '7', '8'};
-
     // FENs
     public static final String FEN_DEFAULT = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
     // Maps piece to character
     public static final String[] PIECE_TO_CHAR = new String[13];
-
-    static {
-        PIECE_TO_CHAR[0] = " ";
-
-        PIECE_TO_CHAR[PIECE_WHITE_PAWN] = "P";
-        PIECE_TO_CHAR[PIECE_WHITE_KNIGHT] = "N";
-        PIECE_TO_CHAR[PIECE_WHITE_BISHOP] = "B";
-        PIECE_TO_CHAR[PIECE_WHITE_ROOK] = "R";
-        PIECE_TO_CHAR[PIECE_WHITE_QUEEN] = "Q";
-        PIECE_TO_CHAR[PIECE_WHITE_KING] = "K";
-
-        PIECE_TO_CHAR[PIECE_BLACK_PAWN] = "p";
-        PIECE_TO_CHAR[PIECE_BLACK_KNIGHT] = "n";
-        PIECE_TO_CHAR[PIECE_BLACK_BISHOP] = "b";
-        PIECE_TO_CHAR[PIECE_BLACK_ROOK] = "r";
-        PIECE_TO_CHAR[PIECE_BLACK_QUEEN] = "q";
-        PIECE_TO_CHAR[PIECE_BLACK_KING] = "k";
-    }
-
     // Squares
     public static final int A1 = 0;
     public static final int B1 = 1;
@@ -162,6 +115,65 @@ public final class Constants {
     public static final int F8 = 117;
     public static final int G8 = 118;
     public static final int H8 = 119;
+    public static final String[] SQUARE_TO_STRING = new String[]{
+            "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "", "", "", "", "", "", "", "",
+            "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", "", "", "", "", "", "", "", "",
+            "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "", "", "", "", "", "", "", "",
+            "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4", "", "", "", "", "", "", "", "",
+            "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "", "", "", "", "", "", "", "",
+            "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "", "", "", "", "", "", "", "",
+            "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7", "", "", "", "", "", "", "", "",
+            "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8", "", "", "", "", "", "", "", "",
+    };
+    public static final int NORTH = 16;
+    public static final int SOUTH = -16;
+    public static final int EAST = 1;
+    public static final int WEST = -1;
+    // Castle right bits
+    public static int CASTLE_WHITE_K = 0b1000;
+    public static int CASTLE_WHITE_Q = 0b0100;
+    public static int CASTLE_BLACK_K = 0b0010;
+    public static int CASTLE_BLACK_Q = 0b0001;
+
+    static {
+        PIECE_TO_CHAR[0] = " ";
+
+        PIECE_TO_CHAR[PIECE_WHITE_PAWN] = "P";
+        PIECE_TO_CHAR[PIECE_WHITE_KNIGHT] = "N";
+        PIECE_TO_CHAR[PIECE_WHITE_BISHOP] = "B";
+        PIECE_TO_CHAR[PIECE_WHITE_ROOK] = "R";
+        PIECE_TO_CHAR[PIECE_WHITE_QUEEN] = "Q";
+        PIECE_TO_CHAR[PIECE_WHITE_KING] = "K";
+
+        PIECE_TO_CHAR[PIECE_BLACK_PAWN] = "p";
+        PIECE_TO_CHAR[PIECE_BLACK_KNIGHT] = "n";
+        PIECE_TO_CHAR[PIECE_BLACK_BISHOP] = "b";
+        PIECE_TO_CHAR[PIECE_BLACK_ROOK] = "r";
+        PIECE_TO_CHAR[PIECE_BLACK_QUEEN] = "q";
+        PIECE_TO_CHAR[PIECE_BLACK_KING] = "k";
+    }
+
+    public static int pieceFromTypeAndColor(int pt, int color) {
+        return pt + color * 6;
+    }
+
+    public static boolean isWhite(int pc) {
+        return pc > PIECE_NONE && pc <= PIECE_WHITE_KING;
+    }
+
+    public static boolean isBlack(int pc) {
+        return pc >= PIECE_BLACK_PAWN;
+    }
+
+    // Gets the type of the piece
+    public static int pieceTypeOfPiece(int pc) {
+        return (pc - 1) % 6 + 1;
+    }
+
+    // Gets the color of the piece
+    public static int colorOfPiece(int pc) {
+        return (pc - 1) / 6;
+    }
 
     // Square utils
     public static int square_file(int sq) {
@@ -170,5 +182,9 @@ public final class Constants {
 
     public static int square_rank(int sq) {
         return sq >> 4;
+    }
+
+    public static boolean is_legal_square(int sq) {
+        return (sq & 0x88) == 0;
     }
 }

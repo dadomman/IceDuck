@@ -1,5 +1,9 @@
 package com.duck.chess;
 
+import java.util.ArrayList;
+
+import static com.duck.chess.Constants.*;
+
 // 0x88 Representation of a chess board
 /*
 8 | 112 113 114 115 116 117 118 119
@@ -25,43 +29,6 @@ public class Board {
     public int ep = 0;
     //Integer representing the move number
     public int movecount = 1;
-
-    // Prettily print the board
-    /*
-        A B C D E F G H
-       -----------------
-    8 | r n b q k b n r | 8
-    7 | p p p p p p p p | 7
-    6 |                 | 6
-    5 |                 | 5
-    4 |                 | 4
-    3 |                 | 3
-    2 | P P P P P P P P | 2
-    1 | R N B Q K B N R | 1
-       -----------------
-        A B C D E F G H
-
-    Side to move: White
-     */
-    public void display() {
-        System.out.println("    A B C D E F G H");
-        System.out.println("   -----------------");
-        for (int i = 7; i >= 0; i--) {
-            System.out.print(Character.toUpperCase(Constants.RANKS[i]));
-            System.out.print(" | ");
-            for (int j = 0; j < 8; j++) {
-                System.out.print(Constants.PIECE_TO_CHAR[board[i * 16 + j]] + " ");
-            }
-            System.out.print("| ");
-            System.out.print(Character.toUpperCase(Constants.RANKS[i]));
-            System.out.println();
-        }
-        System.out.println("   -----------------");
-        System.out.println("    A B C D E F G H");
-
-        System.out.println();
-        System.out.println("Side to move: " + (side_to_move == Constants.COLOR_WHITE ? "White" : "Black"));
-    }
 
     // Empty board
     public Board() {
@@ -124,680 +91,789 @@ public class Board {
                 }
             }
         }
-        //Declare function/method for generating moves
-        static void genLegalMoves() {
-        	for(int i = 0; i < board.length; i++ ) {
-        		if (side_to_move = 0) {
-        			//Checks if there is a pawn 
-        			if (board[i]= 1) {
-        				if (board[i+16] = 0) {
-        					System.out.println(FILES[i+16] + RANKS[i+16]);
-        					if(board[i+32] = 0 && (16<=board[i]<=23)) {
-        						System.out.println(FILES[square_file(i+32)] + RANKS[square_rank(i+32)]);
-        					}
-        					}
-        				else if (board[i+15] != 0) {
-        					System.out.println(FILES[i] + "x" + FILES[square_file(i+15)] + RANKS[square_rank(i+15)]);
-        				}
-        				else if (board[i+17] != 0) {
-        					System.out.println(FILES[i] + "x" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				else if (112<= (i+16) <=119) {
-        					System.out.println(FILES[square_file(i+16)] + RANKS[square_rank(i+16)] + "= Q");
-        					System.out.println(FILES[square_file(i+16)] + RANKS[square_rank(i+16)] + "= N");
-        					System.out.println(FILES[square_file(i+16)] + RANKS[square_rank(i+16)] + "= R");
-        					System.out.println(FILES[square_file(i+16)] + RANKS[square_rank(i+16)] + "= B");
-        				}
-        				//Condition where pawn captures to promote
-        				else if (board[i+15] != 0 && 112<= (i+15) <=119) {
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+15)] + RANKS[square_rank(i+15)] + "= Q");
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+15)] + RANKS[square_rank(i+15)] + "= N");
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+15)] + RANKS[square_rank(i+15)] + "= R");
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+15)] + RANKS[square_rank(i+15)] + "= B");
-        					}
-        				else if (board[i+17] != 0 && 112<= (i+17) <=119) {
-            				System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+17)] + RANKS[square_rank(i+17)] + "= Q");
-            				System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+17)] + RANKS[square_rank(i+17)] + "= N");
-            				System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+17)] + RANKS[square_rank(i+17)] + "= R");
-            				System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+17)] + RANKS[square_rank(i+17)] + "= B");
-            				}
-        				//En Passant, board.ep() will return what square the pawn will be able to capture on after checking if en passant is possible 
-        				if(board.ep()=board[i+15]) {
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+15)] + RANKS[square_rank(i+15)]);
-        				}
-        				else if(board.ep()=board[i+17]) {
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        			}
-        			//Knight
-        			else if (board[i] = 2) {
-        				System.out.println("N"+ FILES[square_file(i+18)] + RANKS[square_rank(i+18)]);
-        				System.out.println("N"+ FILES[square_file(i-18)] + RANKS[square_rank(i-18)]);
-        				System.out.println("N"+ FILES[square_file(i+33)] + RANKS[square_rank(i+33)]);
-        				System.out.println("N"+ FILES[square_file(i-33)] + RANKS[square_rank(i-33)]);
-        				System.out.println("N"+ FILES[square_file(i+31)] + RANKS[square_rank(i+31)]);
-        				System.out.println("N"+ FILES[square_file(i-31)] + RANKS[square_rank(i-31)]);
-        				System.out.println("N"+ FILES[square_file(i+14)] + RANKS[square_rank(i+14)]);
-        				System.out.println("N"+ FILES[square_file(i-14)] + RANKS[square_rank(i-14)]);
-        				if (board[i+18] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+18)] + RANKS[square_rank(i+18)]);
-        				}
-        				if (board[i-18] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-18)] + RANKS[square_rank(i-18)]);
-        				}
-        				else if (board[i+33] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+33)] + RANKS[square_rank(i+33)]);
-        				}
-        				else if (board[i-33] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-33)] + RANKS[square_rank(i-33)]);
-        				}
-        				else if (board[i+31] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+31)] + RANKS[square_rank(i+31)]);
-        				}
-        				else if (board[i-31] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-31)] + RANKS[square_rank(i-31)]);
-        				}
-        				else if (board[i+14] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+14)] + RANKS[square_rank(i+14)]);
-        				}
-        				else if (board[i-14] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-14)] + RANKS[square_rank(i-14)]);
-        				}
-        			}
-        			//Bishop
-        			else if (board[i] = 3) {
-        				//Declares variable which can be manipulated to check if a square is open then checks if a piece occupies said square
-        				int bishUpL = i;
-        				while (board[bishUpL] = 0) {
-        					bishUpL+=15;
-        					if(board[bishUpL] = 0){
-        						System.out.println("B" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
-        						break 
-        					}
-        				}
-        				//Same structure, goes Down Right Diagonal 
-        				int bishDownR = i;
-        				while (board[bishDownR] = 0) {
-        					bishDownR-=15;
-        					if(board[bishDownR] = 0){
-        						System.out.println("B" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
-        						break 
-        					}
-        				}
-        				//Once again, this time checks Up Right diagonal
-        				int bishUpR = i;   				
-        				while (board[bishUpR] = 0) {
-        					bishDownR+=17;
-        					if(board[bishUpR] = 0){
-        						System.out.println("B" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
-        						break 
-        					}
-        				}
-        				//Checks Down Left Diagonal
-        				int bishDownL = i;
-        				while (board[bishDownL] = 0) {
-        					bishDownL+=17;
-        					if(board[bishDownL] = 0){
-        						System.out.println("B" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
-        						break 
-        					}
-        				}
-        			}
-        				
-        			//Rook, same process as bishop just sticks to rows and columns instead of diagonals
-        			else if (board[i] = 4) {
-        				int rookUp = i;
-        				while (board[rookUp] = 0) {
-        					rookUp+=16;
-        					if(board[rookUp] = 0){
-        						System.out.println("R" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
-        						break 
-        					}
-        				}
-        				int rookDown = i;
-        				while (board[rookDown] = 0) {
-        					rookUp-=16;
-        					if(board[rookDown] = 0){
-        						System.out.println("R" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
-        						break 
-        					}
-        				}
-        				int rookLeft = i;
-        				while (board[rookLeft] = 0) {
-        					rookLeft-=1;
-        					if(board[rookLeft] = 0){
-        						System.out.println("R" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
-        						break 
-        					}
-        				}
-        				int rookRight = i;
-        				while (board[rookRight] = 0) {
-        					rookLeft+=1;
-        					if(board[rookRight] = 0){
-        						System.out.println("R" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
-        						break 
-        					}
-        				}
-        			}
-        			//Queen
-        			else if (board[i]=5) {
-        				int queenUpL = i;
-        				while (board[queenUpL] = 0) {
-        					queenUpL+=15;
-        					if(board[queenUpL] = 0){
-        						System.out.println("Q" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
-        						break 
-        					}
-        				}
-        				//Same structure, goes Down Right Diagonal 
-        				int queenDownR = i;
-        				while (board[queenDownR] = 0) {
-        					queenDownR-=15;
-        					if(board[queenDownR] = 0){
-        						System.out.println("Q" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
-        						break 
-        					}
-        				}
-        				//Once again, this time checks Up Right diagonal
-        				int queenUpR = i;   				
-        				while (board[queenUpR] = 0) {
-        					queenDownR+=17;
-        					if(board[queenUpR] = 0){
-        						System.out.println("Q" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
-        						break 
-        					}
-        				}
-        				//Checks Down Left Diagonal
-        				int queenDownL = i;
-        				while (board[queenDownL] = 0) {
-        					queenDownR+=17;
-        					if(board[queenDownL] = 0){
-        						System.out.println("Q" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
-        						break 
-        					}
-        				}
-        				int queenUp = i;
-        				while (board[queenUp] = 0) {
-        					queenUp+=16;
-        					if(board[queenUp] = 0){
-        						System.out.println("Q" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
-        						break 
-        					}
-        				}
-        				int queenDown = i;
-        				while (board[queenDown] = 0) {
-        					queenUp-=16;
-        					if(board[queenDown] = 0){
-        						System.out.println("Q" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
-        						break 
-        					}
-        				}
-        				int queenLeft = i;
-        				while (board[queenLeft] = 0) {
-        					queenLeft-=1;
-        					if(board[queenLeft] = 0){
-        						System.out.println("Q" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
-        						break 
-        					}
-        				}
-        				int queenRight = i;
-        				while (board[queenRight] = 0) {
-        					rookLeft+=1;
-        					if(board[queenRight] = 0){
-        						System.out.println("Q" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
-        						break 
-        					}
-        				}
-        			}
-        			//King
-        			else if (board[i]=6) {
-        				if(board[i+16] = 0) {
-        					System.out.println("K" + FILES[square_file(i+16)] + RANKS[square_rank(i+16)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+16)] + RANKS[square_rank(i+16)]);
-        				}
-        				if(board[i+17] = 0) {
-        					System.out.println("K" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				if(board[i-16] = 0) {
-        					System.out.println("K" + FILES[square_file(i-16)] + RANKS[square_rank(i-16)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-16)] + RANKS[square_rank(i-16)]);
-        				}
-        				if(board[i-17] = 0) {
-        					System.out.println("K" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				if(board[i+15] = 0) {
-        					System.out.println("K" + FILES[square_file(i+15)] + RANKS[square_rank(i+15)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+15)] + RANKS[square_rank(i+15)]);
-        				}
-        				if(board[i-15] = 0) {
-        					System.out.println("K" + FILES[square_file(i-15)] + RANKS[square_rank(i-15)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-15)] + RANKS[square_rank(i-15)]);
-        				}
-        				if(board[i+17] = 0) {
-        					System.out.println("K" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				if(board[i-17] = 0) {
-        					System.out.println("K" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				if(board[i+1] = 0) {
-        					System.out.println("K" + FILES[square_file(i+1)] + RANKS[square_rank(i+1)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+1)] + RANKS[square_rank(i+1)]);
-        				}
-        				if(board[i-1] = 0) {
-        					System.out.println("K" + FILES[square_file(i-1)] + RANKS[square_rank(i-1)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-1)] + RANKS[square_rank(i-1)])
-        				}
-        			}
-        			} 
-        		
-        		//Black side move check
-        		else if (side_to_move = 1) {
-        			//Pawn code
-        			if (board[i]= 1) {
-        				if (board[i-16] = 0) {
-        					System.out.println(FILES[i-16] + RANKS[i-16]);
-        					if(board[i-32] = 0 && (96<=board[i]<=103)) {
-        						System.out.println(FILES[square_file(i-32)] + RANKS[square_rank(i-32)]);
-        					}
-        					}
-        				else if (board[i-15] != 0) {
-        					System.out.println(FILES[i] + "x" + FILES[square_file(i-15)] + RANKS[square_rank(i-15)]);
-        				}
-        				else if (board[i-17] != 0) {
-        					System.out.println(FILES[i] + "x" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				else if (0<= (i-16) <=7) {
-        					System.out.println(FILES[square_file(i-16)] + RANKS[square_rank(i-16)] + "= Q");
-        					System.out.println(FILES[square_file(i-16)] + RANKS[square_rank(i-16)] + "= N");
-        					System.out.println(FILES[square_file(i-16)] + RANKS[square_rank(i-16)] + "= R");
-        					System.out.println(FILES[square_file(i-16)] + RANKS[square_rank(i-16)] + "= B");
-        				}
-        				//Condition where pawn captures to promote
-        				else if (board[i-15] != 0 && 0<= (i-15) <=7) {
-        					System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-15)] + RANKS[square_rank(i-15)] + "= Q");
-        					System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-15)] + RANKS[square_rank(i-15)] + "= N");
-        					System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-15)] + RANKS[square_rank(i-15)] + "= R");
-        					System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-15)] + RANKS[square_rank(i-15)] + "= B");
-        					}
-        				else if (board[i-17] != 0 && 0 <=(i-17)<= 7) {
-            				System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-17)] + RANKS[square_rank(i-17)] + "= Q");
-            				System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-17)] + RANKS[square_rank(i-17)] + "= N");
-            				System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-17)] + RANKS[square_rank(i-17)] + "= R");
-            				System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-17)] + RANKS[square_rank(i-17)] + "= B");
-            				}
-        				//En Passant, board.ep() will return what square the pawn will be able to capture on after checking if en passant is possible 
-        				if(board.ep()=board[i-15]) {
-        					System.out.println(FILES[square_file(i-16)]+ "x"+ FILES[square_file(i-15)] + RANKS[square_rank(i-15)]);
-        				}
-        				else if(board.ep()=board[i-17]) {
-        					System.out.println(FILES[square_file(i+16)]+ "x"+ FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        			}
-        			//Knight
-        			else if (board[i] = 2) {
-        				System.out.println("N"+ FILES[square_file(i+18)] + RANKS[square_rank(i+18)]);
-        				System.out.println("N"+ FILES[square_file(i-18)] + RANKS[square_rank(i-18)]);
-        				System.out.println("N"+ FILES[square_file(i+33)] + RANKS[square_rank(i+33)]);
-        				System.out.println("N"+ FILES[square_file(i-33)] + RANKS[square_rank(i-33)]);
-        				System.out.println("N"+ FILES[square_file(i+31)] + RANKS[square_rank(i+31)]);
-        				System.out.println("N"+ FILES[square_file(i-31)] + RANKS[square_rank(i-31)]);
-        				System.out.println("N"+ FILES[square_file(i+14)] + RANKS[square_rank(i+14)]);
-        				System.out.println("N"+ FILES[square_file(i-14)] + RANKS[square_rank(i-14)]);
-        				if (board[i+18] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+18)] + RANKS[square_rank(i+18)]);
-        				}
-        				if (board[i-18] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-18)] + RANKS[square_rank(i-18)]);
-        				}
-        				else if (board[i+33] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+33)] + RANKS[square_rank(i+33)]);
-        				}
-        				else if (board[i-33] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-33)] + RANKS[square_rank(i-33)]);
-        				}
-        				else if (board[i+31] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+31)] + RANKS[square_rank(i+31)]);
-        				}
-        				else if (board[i-31] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-31)] + RANKS[square_rank(i-31)]);
-        				}
-        				else if (board[i+14] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i+14)] + RANKS[square_rank(i+14)]);
-        				}
-        				else if (board[i-14] != 0 ) {
-        					System.out.println("Nx"+ FILES[square_file(i-14)] + RANKS[square_rank(i-14)]);
-        				}
-        			}
-        			//Bishop
-        			else if (board[i] = 3) {
-        				//Declares variable which can be manipulated to check if a square is open then checks if a piece occupies said square
-        				int bishUpL = i;
-        				while (board[bishUpL] = 0) {
-        					bishUpL+=15;
-        					if(board[bishUpL] = 0){
-        						System.out.println("B" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
-        						break 
-        					}
-        				}
-        				//Same structure, goes Down Right Diagonal 
-        				int bishDownR = i;
-        				while (board[bishDownR] = 0) {
-        					bishDownR-=15;
-        					if(board[bishDownR] = 0){
-        						System.out.println("B" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
-        						break 
-        					}
-        				}
-        				//Once again, this time checks Up Right diagonal
-        				int bishUpR = i;   				
-        				while (board[bishUpR] = 0) {
-        					bishDownR+=17;
-        					if(board[bishUpR] = 0){
-        						System.out.println("B" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
-        						break 
-        					}
-        				}
-        				//Checks Down Left Diagonal
-        				int bishDownL = i;
-        				while (board[bishDownL] = 0) {
-        					bishDownR+=17;
-        					if(board[bishDownL] = 0){
-        						System.out.println("B" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
-        					}	
-        					else {
-        						System.out.println("Bx" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
-        						break 
-        					}
-        				}
-        			}
-        				
-        			//Rook, same process as bishop just sticks to rows and columns instead of diagonals
-        			else if (board[i] = 4) {
-        				int rookUp = i;
-        				while (board[rookUp] = 0) {
-        					rookUp+=16;
-        					if(board[rookUp] = 0){
-        						System.out.println("R" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
-        						break 
-        					}
-        				}
-        				int rookDown = i;
-        				while (board[rookDown] = 0) {
-        					rookUp-=16;
-        					if(board[rookDown] = 0){
-        						System.out.println("R" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
-        						break 
-        					}
-        				}
-        				int rookLeft = i;
-        				while (board[rookLeft] = 0) {
-        					rookLeft-=1;
-        					if(board[rookLeft] = 0){
-        						System.out.println("R" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
-        						break 
-        					}
-        				}
-        				int rookRight = i;
-        				while (board[rookRight] = 0) {
-        					rookLeft+=1;
-        					if(board[rookRight] = 0){
-        						System.out.println("R" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
-        					}	
-        					else {
-        						System.out.println("Rx" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
-        						break 
-        					}
-        				}
-        			}
-        			//Queen
-        			else if (board[i]=5) {
-        				int queenUpL = i;
-        				while (board[queenUpL] = 0) {
-        					queenUpL+=15;
-        					if(board[queenUpL] = 0){
-        						System.out.println("Q" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
-        						break 
-        					}
-        				}
-        				//Same structure, goes Down Right Diagonal 
-        				int queenDownR = i;
-        				while (board[queenDownR] = 0) {
-        					queenDownR-=15;
-        					if(board[queenDownR] = 0){
-        						System.out.println("Q" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
-        						break 
-        					}
-        				}
-        				//Once again, this time checks Up Right diagonal
-        				int queenUpR = i;   				
-        				while (board[queenUpR] = 0) {
-        					queenDownR+=17;
-        					if(board[queenUpR] = 0){
-        						System.out.println("Q" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
-        						break 
-        					}
-        				}
-        				//Checks Down Left Diagonal
-        				int queenDownL = i;
-        				while (board[queenDownL] = 0) {
-        					queenDownR+=17;
-        					if(board[queenDownL] = 0){
-        						System.out.println("Q" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
-        						break 
-        					}
-        				}
-        				int queenUp = i;
-        				while (board[queenUp] = 0) {
-        					queenUp+=16;
-        					if(board[queenUp] = 0){
-        						System.out.println("Q" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
-        						break 
-        					}
-        				}
-        				int queenDown = i;
-        				while (board[queenDown] = 0) {
-        					queenUp-=16;
-        					if(board[queenDown] = 0){
-        						System.out.println("Q" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
-        						break 
-        					}
-        				}
-        				int queenLeft = i;
-        				while (board[queenLeft] = 0) {
-        					queenLeft-=1;
-        					if(board[queenLeft] = 0){
-        						System.out.println("Q" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
-        						break 
-        					}
-        				}
-        				int queenRight = i;
-        				while (board[queenRight] = 0) {
-        					rookLeft+=1;
-        					if(board[queenRight] = 0){
-        						System.out.println("Q" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
-        					}	
-        					else {
-        						System.out.println("Qx" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
-        						break 
-        					}
-        				}
-        			}
-        			//King
-        			else if (board[i]=6) {
-        				if(board[i+16] = 0) {
-        					System.out.println("K" + FILES[square_file(i+16)] + RANKS[square_rank(i+16)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+16)] + RANKS[square_rank(i+16)]);
-        				}
-        				if(board[i+17] = 0) {
-        					System.out.println("K" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				if(board[i-16] = 0) {
-        					System.out.println("K" + FILES[square_file(i-16)] + RANKS[square_rank(i-16)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-16)] + RANKS[square_rank(i-16)]);
-        				}
-        				if(board[i-17] = 0) {
-        					System.out.println("K" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				if(board[i+15] = 0) {
-        					System.out.println("K" + FILES[square_file(i+15)] + RANKS[square_rank(i+15)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+15)] + RANKS[square_rank(i+15)]);
-        				}
-        				if(board[i-15] = 0) {
-        					System.out.println("K" + FILES[square_file(i-15)] + RANKS[square_rank(i-15)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-15)] + RANKS[square_rank(i-15)]);
-        				}
-        				if(board[i+17] = 0) {
-        					System.out.println("K" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+17)] + RANKS[square_rank(i+17)]);
-        				}
-        				if(board[i-17] = 0) {
-        					System.out.println("K" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-17)] + RANKS[square_rank(i-17)]);
-        				}
-        				if(board[i+1] = 0) {
-        					System.out.println("K" + FILES[square_file(i+1)] + RANKS[square_rank(i+1)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i+1)] + RANKS[square_rank(i+1)]);
-        				}
-        				if(board[i-1] = 0) {
-        					System.out.println("K" + FILES[square_file(i-1)] + RANKS[square_rank(i-1)]);
-        				}
-        				else {
-        					System.out.println("Kx" + FILES[square_file(i-1)] + RANKS[square_rank(i-1)])
-        				}
-        		}
-        		}
-        	}
+    }
+
+    // Prettily print the board
+    /*
+        A B C D E F G H
+       -----------------
+    8 | r n b q k b n r | 8
+    7 | p p p p p p p p | 7
+    6 |                 | 6
+    5 |                 | 5
+    4 |                 | 4
+    3 |                 | 3
+    2 | P P P P P P P P | 2
+    1 | R N B Q K B N R | 1
+       -----------------
+        A B C D E F G H
+
+    Side to move: White
+     */
+    public void display() {
+        System.out.println("    A B C D E F G H");
+        System.out.println("   -----------------");
+        for (int i = 7; i >= 0; i--) {
+            System.out.print(Character.toUpperCase(RANKS[i]));
+            System.out.print(" | ");
+            for (int j = 0; j < 8; j++) {
+                System.out.print(Constants.PIECE_TO_CHAR[board[i * 16 + j]] + " ");
+            }
+            System.out.print("| ");
+            System.out.print(Character.toUpperCase(RANKS[i]));
+            System.out.println();
+        }
+        System.out.println("   -----------------");
+        System.out.println("    A B C D E F G H");
+
+        System.out.println();
+        System.out.println("Side to move: " + (side_to_move == Constants.COLOR_WHITE ? "White" : "Black"));
+    }
+
+    void genPawnQuietMoves(int i, ArrayList<Move> moves) {
+        var piece = pieceFromTypeAndColor(Constants.PIECE_TYPE_PAWN, side_to_move);
+        if (side_to_move == COLOR_WHITE) {
+            if (board[i + NORTH] == 0) {
+                if (square_rank(i) == 6) {
+                    for (var promote_piece = PIECE_WHITE_KNIGHT; promote_piece <= PIECE_WHITE_QUEEN; promote_piece++) {
+                        moves.add(new Move(
+                                i, i + NORTH, piece,
+                                false, false, false,
+                                promote_piece, false)
+                        );
+                    }
+                } else {
+                    // Single Push
+                    moves.add(new Move(
+                            i, i + NORTH, piece,
+                            false, false, false,
+                            0, false)
+                    );
+
+                    if (square_rank(i) == 1 && board[i + NORTH + NORTH] == 0) {
+                        // Double Push
+                        moves.add(new Move(
+                                i, i + NORTH + NORTH, piece,
+                                true, false, false,
+                                0, false)
+                        );
+                    }
+                }
+            }
+        } else {
+            if (board[i + SOUTH] == 0) {
+                if (square_rank(i) == 1) {
+                    for (var promote_piece = PIECE_BLACK_KNIGHT; promote_piece <= PIECE_BLACK_QUEEN; promote_piece++) {
+                        moves.add(new Move(
+                                i, i + SOUTH, piece,
+                                false, false, false,
+                                promote_piece, false)
+                        );
+                    }
+                } else {
+                    // Single Push
+                    moves.add(new Move(
+                            i, i + SOUTH, piece,
+                            false, false, false,
+                            0, false)
+                    );
+
+                    if (square_rank(i) == 6 && board[i + SOUTH + SOUTH] == 0) {
+                        // Double Push
+                        moves.add(new Move(
+                                i, i + SOUTH + SOUTH, piece,
+                                true, false, false,
+                                0, false)
+                        );
+                    }
+                }
+            }
         }
     }
+
+    void genPawnCaptureMoves(int i, ArrayList<Move> moves) {
+        var piece = pieceFromTypeAndColor(Constants.PIECE_TYPE_PAWN, side_to_move);
+        if (side_to_move == COLOR_WHITE) {
+            var targetSquareLeft = i + NORTH + WEST;
+            var targetSquareRight = i + NORTH + EAST;
+            if (is_legal_square(targetSquareLeft)) {
+                if (targetSquareLeft == ep) {
+                    moves.add(new Move(
+                            i, targetSquareLeft, piece,
+                            false, true, true,
+                            0, false));
+                } else if (board[targetSquareLeft] != 0
+                        && colorOfPiece(board[targetSquareLeft]) == COLOR_BLACK) {
+                    moves.add(new Move(
+                            i, targetSquareLeft, piece,
+                            false, true, false,
+                            0, false));
+                }
+            }
+            if (is_legal_square(targetSquareRight)) {
+                if (targetSquareRight == ep) {
+                    moves.add(new Move(
+                            i, targetSquareRight, piece,
+                            false, true, true,
+                            0, false));
+                } else if (board[targetSquareRight] != 0
+                        && colorOfPiece(board[targetSquareRight]) == COLOR_BLACK) {
+                    moves.add(new Move(
+                            i, targetSquareRight, piece,
+                            false, true, false,
+                            0, false));
+                }
+            }
+        } else {
+            var targetSquareLeft = i + SOUTH + WEST;
+            var targetSquareRight = i + SOUTH + EAST;
+            if (is_legal_square(targetSquareLeft)) {
+                if (targetSquareLeft == ep) {
+                    moves.add(new Move(
+                            i, targetSquareLeft, piece,
+                            false, true, true,
+                            0, false));
+                } else if (board[targetSquareLeft] != 0
+                        && colorOfPiece(board[targetSquareLeft]) == COLOR_WHITE) {
+                    moves.add(new Move(
+                            i, targetSquareLeft, piece,
+                            false, true, false,
+                            0, false));
+                }
+            }
+            if (is_legal_square(targetSquareRight)) {
+                if (targetSquareRight == ep) {
+                    moves.add(new Move(
+                            i, targetSquareRight, piece,
+                            false, true, true,
+                            0, false));
+                } else if (board[targetSquareRight] != 0
+                        && colorOfPiece(board[targetSquareRight]) == COLOR_WHITE) {
+                    moves.add(new Move(
+                            i, targetSquareRight, piece,
+                            false, true, false,
+                            0, false));
+                }
+            }
+        }
+    }
+
+    //Declare function/method for generating moves
+    public ArrayList<Move> genLegalMoves() {
+        var moves = new ArrayList<Move>(16);
+        for (int i = 0; i < board.length; i++) {
+            if (!is_legal_square(i) || board[i] == 0 || colorOfPiece(board[i]) != side_to_move) {
+                continue;
+            }
+
+            switch (pieceTypeOfPiece(board[i])) {
+                case PIECE_TYPE_PAWN:
+                    genPawnQuietMoves(i, moves);
+                    genPawnCaptureMoves(i, moves);
+                    break;
+                default:
+
+            }
+        }
+        return moves;
+    }
+            /*
+            if (side_to_move == 0) {
+                //Checks if there is a pawn
+                if (board[i] == 1) {
+                    if (board[i + 16] == 0) {
+                        System.out.println(FILES[i + 16] + RANKS[i + 16]);
+                        if (board[i + 32] == 0 && (16 <= board[i] && board[i] <= 23)) {
+                            System.out.println(FILES[square_file(i + 32)] + RANKS[square_rank(i + 32)]);
+                        }
+                    } else if (board[i + 15] != 0) {
+                        System.out.println(FILES[i] + "x" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)]);
+                    } else if (board[i + 17] != 0) {
+                        System.out.println(FILES[i] + "x" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    } else if (112 <= (i + 16) && (i + 16) <= 119) {
+                        System.out.println(FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)] + "= Q");
+                        System.out.println(FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)] + "= N");
+                        System.out.println(FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)] + "= R");
+                        System.out.println(FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)] + "= B");
+                    }
+                    //Condition where pawn captures to promote
+                    else if (board[i + 15] != 0 && 112 <= (i + 15) && (i + 15) <= 119) {
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)] + "= Q");
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)] + "= N");
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)] + "= R");
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)] + "= B");
+                    } else if (board[i + 17] != 0 && 112 <= (i + 17) && (i + 17) <= 119) {
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)] + "= Q");
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)] + "= N");
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)] + "= R");
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)] + "= B");
+                    }
+
+                    // EN PASSANT
+                    if (ep == board[i + 15]) {
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)]);
+                    } else if (ep == board[i + 17]) {
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    }
+                }
+                //Knight
+                else if (board[i] == 2) {
+                    System.out.println("N" + FILES[square_file(i + 18)] + RANKS[square_rank(i + 18)]);
+                    System.out.println("N" + FILES[square_file(i - 18)] + RANKS[square_rank(i - 18)]);
+                    System.out.println("N" + FILES[square_file(i + 33)] + RANKS[square_rank(i + 33)]);
+                    System.out.println("N" + FILES[square_file(i - 33)] + RANKS[square_rank(i - 33)]);
+                    System.out.println("N" + FILES[square_file(i + 31)] + RANKS[square_rank(i + 31)]);
+                    System.out.println("N" + FILES[square_file(i - 31)] + RANKS[square_rank(i - 31)]);
+                    System.out.println("N" + FILES[square_file(i + 14)] + RANKS[square_rank(i + 14)]);
+                    System.out.println("N" + FILES[square_file(i - 14)] + RANKS[square_rank(i - 14)]);
+                    if (board[i + 18] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 18)] + RANKS[square_rank(i + 18)]);
+                    }
+                    if (board[i - 18] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 18)] + RANKS[square_rank(i - 18)]);
+                    } else if (board[i + 33] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 33)] + RANKS[square_rank(i + 33)]);
+                    } else if (board[i - 33] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 33)] + RANKS[square_rank(i - 33)]);
+                    } else if (board[i + 31] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 31)] + RANKS[square_rank(i + 31)]);
+                    } else if (board[i - 31] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 31)] + RANKS[square_rank(i - 31)]);
+                    } else if (board[i + 14] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 14)] + RANKS[square_rank(i + 14)]);
+                    } else if (board[i - 14] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 14)] + RANKS[square_rank(i - 14)]);
+                    }
+                }
+                //Bishop
+                else if (board[i] == 3) {
+                    //Declares variable which can be manipulated to check if a square is open then checks if a piece occupies said square
+                    int bishUpL = i;
+                    while (board[bishUpL] == 0) {
+                        bishUpL += 15;
+                        if (board[bishUpL] == 0) {
+                            System.out.println("B" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
+                            break;
+                        }
+                    }
+                    //Same structure, goes Down Right Diagonal
+                    int bishDownR = i;
+                    while (board[bishDownR] == 0) {
+                        bishDownR -= 15;
+                        if (board[bishDownR] == 0) {
+                            System.out.println("B" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
+                            break;
+                        }
+                    }
+                    //Once again, this time checks Up Right diagonal
+                    int bishUpR = i;
+                    while (board[bishUpR] == 0) {
+                        bishDownR += 17;
+                        if (board[bishUpR] == 0) {
+                            System.out.println("B" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
+                            break;
+                        }
+                    }
+                    //Checks Down Left Diagonal
+                    int bishDownL = i;
+                    while (board[bishDownL] == 0) {
+                        bishDownL += 17;
+                        if (board[bishDownL] == 0) {
+                            System.out.println("B" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
+                            break;
+                        }
+                    }
+                }
+
+                //Rook, same process as bishop just sticks to rows and columns instead of diagonals
+                else if (board[i] == 4) {
+                    int rookUp = i;
+                    while (board[rookUp] == 0) {
+                        rookUp += 16;
+                        if (board[rookUp] == 0) {
+                            System.out.println("R" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
+                            break;
+                        }
+                    }
+                    int rookDown = i;
+                    while (board[rookDown] == 0) {
+                        rookUp -= 16;
+                        if (board[rookDown] == 0) {
+                            System.out.println("R" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
+                            break;
+                        }
+                    }
+                    int rookLeft = i;
+                    while (board[rookLeft] == 0) {
+                        rookLeft -= 1;
+                        if (board[rookLeft] == 0) {
+                            System.out.println("R" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
+                            break;
+                        }
+                    }
+                    int rookRight = i;
+                    while (board[rookRight] == 0) {
+                        rookLeft += 1;
+                        if (board[rookRight] == 0) {
+                            System.out.println("R" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
+                            break;
+                        }
+                    }
+                }
+                //Queen
+                else if (board[i] == 5) {
+                    int queenUpL = i;
+                    while (board[queenUpL] == 0) {
+                        queenUpL += 15;
+                        if (board[queenUpL] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
+                            break;
+                        }
+                    }
+                    //Same structure, goes Down Right Diagonal
+                    int queenDownR = i;
+                    while (board[queenDownR] == 0) {
+                        queenDownR -= 15;
+                        if (board[queenDownR] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
+                            break;
+                        }
+                    }
+                    //Once again, this time checks Up Right diagonal
+                    int queenUpR = i;
+                    while (board[queenUpR] == 0) {
+                        queenDownR += 17;
+                        if (board[queenUpR] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
+                            break;
+                        }
+                    }
+                    //Checks Down Left Diagonal
+                    int queenDownL = i;
+                    while (board[queenDownL] == 0) {
+                        queenDownR += 17;
+                        if (board[queenDownL] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
+                            break;
+                        }
+                    }
+                    int queenUp = i;
+                    while (board[queenUp] == 0) {
+                        queenUp += 16;
+                        if (board[queenUp] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
+                            break;
+                        }
+                    }
+                    int queenDown = i;
+                    while (board[queenDown] == 0) {
+                        queenUp -= 16;
+                        if (board[queenDown] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
+                            break;
+                        }
+                    }
+                    int queenLeft = i;
+                    while (board[queenLeft] == 0) {
+                        queenLeft -= 1;
+                        if (board[queenLeft] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
+                            break;
+                        }
+                    }
+                    int queenRight = i;
+                    while (board[queenRight] == 0) {
+                        queenRight += 1;
+                        if (board[queenRight] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
+                            break;
+                        }
+                    }
+                }
+                //King
+                else if (board[i] == 6) {
+                    if (board[i + 16] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)]);
+                    }
+                    if (board[i + 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    }
+                    if (board[i - 16] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)]);
+                    }
+                    if (board[i - 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    }
+                    if (board[i + 15] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)]);
+                    }
+                    if (board[i - 15] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)]);
+                    }
+                    if (board[i + 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    }
+                    if (board[i - 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    }
+                    if (board[i + 1] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 1)] + RANKS[square_rank(i + 1)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 1)] + RANKS[square_rank(i + 1)]);
+                    }
+                    if (board[i - 1] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 1)] + RANKS[square_rank(i - 1)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 1)] + RANKS[square_rank(i - 1)]);
+                    }
+                }
+            }
+
+            //Black side move check
+            else if (side_to_move == 1) {
+                //Pawn code
+                if (board[i] == 1) {
+                    if (board[i - 16] == 0) {
+                        System.out.println(FILES[i - 16] + RANKS[i - 16]);
+                        if (board[i - 32] == 0 && (96 <= board[i] && board[i] <= 103)) {
+                            System.out.println(FILES[square_file(i - 32)] + RANKS[square_rank(i - 32)]);
+                        }
+                    } else if (board[i - 15] != 0) {
+                        System.out.println(FILES[i] + "x" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)]);
+                    } else if (board[i - 17] != 0) {
+                        System.out.println(FILES[i] + "x" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    } else if (0 <= (i - 16) && (i - 16) <= 7) {
+                        System.out.println(FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)] + "= Q");
+                        System.out.println(FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)] + "= N");
+                        System.out.println(FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)] + "= R");
+                        System.out.println(FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)] + "= B");
+                    }
+                    //Condition where pawn captures to promote
+                    else if (board[i - 15] != 0 && 0 <= (i - 15) && (i - 15) <= 7) {
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)] + "= Q");
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)] + "= N");
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)] + "= R");
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)] + "= B");
+                    } else if (board[i - 17] != 0 && 0 <= (i - 17) && (i - 17) <= 7) {
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)] + "= Q");
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)] + "= N");
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)] + "= R");
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)] + "= B");
+                    }
+                    //En Passant, board.ep() will return what square the pawn will be able to capture on after checking if en passant is possible
+                    if (ep == board[i - 15]) {
+                        System.out.println(FILES[square_file(i - 16)] + "x" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)]);
+                    } else if (ep == board[i - 17]) {
+                        System.out.println(FILES[square_file(i + 16)] + "x" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    }
+                }
+                //Knight
+                else if (board[i] == 2) {
+                    System.out.println("N" + FILES[square_file(i + 18)] + RANKS[square_rank(i + 18)]);
+                    System.out.println("N" + FILES[square_file(i - 18)] + RANKS[square_rank(i - 18)]);
+                    System.out.println("N" + FILES[square_file(i + 33)] + RANKS[square_rank(i + 33)]);
+                    System.out.println("N" + FILES[square_file(i - 33)] + RANKS[square_rank(i - 33)]);
+                    System.out.println("N" + FILES[square_file(i + 31)] + RANKS[square_rank(i + 31)]);
+                    System.out.println("N" + FILES[square_file(i - 31)] + RANKS[square_rank(i - 31)]);
+                    System.out.println("N" + FILES[square_file(i + 14)] + RANKS[square_rank(i + 14)]);
+                    System.out.println("N" + FILES[square_file(i - 14)] + RANKS[square_rank(i - 14)]);
+                    if (board[i + 18] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 18)] + RANKS[square_rank(i + 18)]);
+                    }
+                    if (board[i - 18] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 18)] + RANKS[square_rank(i - 18)]);
+                    } else if (board[i + 33] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 33)] + RANKS[square_rank(i + 33)]);
+                    } else if (board[i - 33] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 33)] + RANKS[square_rank(i - 33)]);
+                    } else if (board[i + 31] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 31)] + RANKS[square_rank(i + 31)]);
+                    } else if (board[i - 31] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 31)] + RANKS[square_rank(i - 31)]);
+                    } else if (board[i + 14] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i + 14)] + RANKS[square_rank(i + 14)]);
+                    } else if (board[i - 14] != 0) {
+                        System.out.println("Nx" + FILES[square_file(i - 14)] + RANKS[square_rank(i - 14)]);
+                    }
+                }
+                //Bishop
+                else if (board[i] == 3) {
+                    //Declares variable which can be manipulated to check if a square is open then checks if a piece occupies said square
+                    int bishUpL = i;
+                    while (board[bishUpL] == 0) {
+                        bishUpL += 15;
+                        if (board[bishUpL] == 0) {
+                            System.out.println("B" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishUpL)] + RANKS[square_rank(bishUpL)]);
+                            break;
+                        }
+                    }
+                    //Same structure, goes Down Right Diagonal
+                    int bishDownR = i;
+                    while (board[bishDownR] == 0) {
+                        bishDownR -= 15;
+                        if (board[bishDownR] == 0) {
+                            System.out.println("B" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishDownR)] + RANKS[square_rank(bishDownR)]);
+                            break;
+                        }
+                    }
+                    //Once again, this time checks Up Right diagonal
+                    int bishUpR = i;
+                    while (board[bishUpR] == 0) {
+                        bishDownR += 17;
+                        if (board[bishUpR] == 0) {
+                            System.out.println("B" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishUpR)] + RANKS[square_rank(bishUpR)]);
+                            break;
+                        }
+                    }
+                    //Checks Down Left Diagonal
+                    int bishDownL = i;
+                    while (board[bishDownL] == 0) {
+                        bishDownR += 17;
+                        if (board[bishDownL] == 0) {
+                            System.out.println("B" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
+                        } else {
+                            System.out.println("Bx" + FILES[square_file(bishDownL)] + RANKS[square_rank(bishDownL)]);
+                            break;
+                        }
+                    }
+                }
+
+                //Rook, same process as bishop just sticks to rows and columns instead of diagonals
+                else if (board[i] == 4) {
+                    int rookUp = i;
+                    while (board[rookUp] == 0) {
+                        rookUp += 16;
+                        if (board[rookUp] == 0) {
+                            System.out.println("R" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookUp)] + RANKS[square_rank(rookUp)]);
+                            break;
+                        }
+                    }
+                    int rookDown = i;
+                    while (board[rookDown] == 0) {
+                        rookUp -= 16;
+                        if (board[rookDown] == 0) {
+                            System.out.println("R" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookDown)] + RANKS[square_rank(rookDown)]);
+                            break;
+                        }
+                    }
+                    int rookLeft = i;
+                    while (board[rookLeft] == 0) {
+                        rookLeft -= 1;
+                        if (board[rookLeft] == 0) {
+                            System.out.println("R" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookLeft)] + RANKS[square_rank(rookLeft)]);
+                            break;
+                        }
+                    }
+                    int rookRight = i;
+                    while (board[rookRight] == 0) {
+                        rookLeft += 1;
+                        if (board[rookRight] == 0) {
+                            System.out.println("R" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
+                        } else {
+                            System.out.println("Rx" + FILES[square_file(rookRight)] + RANKS[square_rank(rookRight)]);
+                            break;
+                        }
+                    }
+                }
+                //Queen
+                else if (board[i] == 5) {
+                    int queenUpL = i;
+                    while (board[queenUpL] == 0) {
+                        queenUpL += 15;
+                        if (board[queenUpL] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenUpL)] + RANKS[square_rank(queenUpL)]);
+                            break;
+                        }
+                    }
+                    //Same structure, goes Down Right Diagonal
+                    int queenDownR = i;
+                    while (board[queenDownR] == 0) {
+                        queenDownR -= 15;
+                        if (board[queenDownR] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenDownR)] + RANKS[square_rank(queenDownR)]);
+                            break;
+                        }
+                    }
+                    //Once again, this time checks Up Right diagonal
+                    int queenUpR = i;
+                    while (board[queenUpR] == 0) {
+                        queenDownR += 17;
+                        if (board[queenUpR] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenUpR)] + RANKS[square_rank(queenUpR)]);
+                            break;
+                        }
+                    }
+                    //Checks Down Left Diagonal
+                    int queenDownL = i;
+                    while (board[queenDownL] == 0) {
+                        queenDownR += 17;
+                        if (board[queenDownL] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenDownL)] + RANKS[square_rank(queenDownL)]);
+                            break;
+                        }
+                    }
+                    int queenUp = i;
+                    while (board[queenUp] == 0) {
+                        queenUp += 16;
+                        if (board[queenUp] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenUp)] + RANKS[square_rank(queenUp)]);
+                            break;
+                        }
+                    }
+                    int queenDown = i;
+                    while (board[queenDown] == 0) {
+                        queenUp -= 16;
+                        if (board[queenDown] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenDown)] + RANKS[square_rank(queenDown)]);
+                            break;
+                        }
+                    }
+                    int queenLeft = i;
+                    while (board[queenLeft] == 0) {
+                        queenLeft -= 1;
+                        if (board[queenLeft] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenLeft)] + RANKS[square_rank(queenLeft)]);
+                            break;
+                        }
+                    }
+                    int queenRight = i;
+                    while (board[queenRight] == 0) {
+                        queenRight += 1;
+                        if (board[queenRight] == 0) {
+                            System.out.println("Q" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
+                        } else {
+                            System.out.println("Qx" + FILES[square_file(queenRight)] + RANKS[square_rank(queenRight)]);
+                            break;
+                        }
+                    }
+                }
+                //King
+                else if (board[i] == 6) {
+                    if (board[i + 16] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 16)] + RANKS[square_rank(i + 16)]);
+                    }
+                    if (board[i + 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    }
+                    if (board[i - 16] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 16)] + RANKS[square_rank(i - 16)]);
+                    }
+                    if (board[i - 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    }
+                    if (board[i + 15] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 15)] + RANKS[square_rank(i + 15)]);
+                    }
+                    if (board[i - 15] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 15)] + RANKS[square_rank(i - 15)]);
+                    }
+                    if (board[i + 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 17)] + RANKS[square_rank(i + 17)]);
+                    }
+                    if (board[i - 17] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 17)] + RANKS[square_rank(i - 17)]);
+                    }
+                    if (board[i + 1] == 0) {
+                        System.out.println("K" + FILES[square_file(i + 1)] + RANKS[square_rank(i + 1)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i + 1)] + RANKS[square_rank(i + 1)]);
+                    }
+                    if (board[i - 1] == 0) {
+                        System.out.println("K" + FILES[square_file(i - 1)] + RANKS[square_rank(i - 1)]);
+                    } else {
+                        System.out.println("Kx" + FILES[square_file(i - 1)] + RANKS[square_rank(i - 1)]);
+                    }
+                }
+            }
+             */
 }
