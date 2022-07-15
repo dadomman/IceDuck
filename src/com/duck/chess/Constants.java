@@ -176,15 +176,57 @@ public final class Constants {
     }
 
     // Square utils
-    public static int square_file(int sq) {
+    public static int squareFile(int sq) {
         return sq & 7;
     }
 
-    public static int square_rank(int sq) {
+    public static int squareRank(int sq) {
         return sq >> 4;
     }
 
-    public static boolean is_legal_square(int sq) {
+    public static boolean isLegalSquare(int sq) {
         return (sq & 0x88) == 0;
     }
+
+    public static final boolean[] IS_SLIDER = new boolean[]{
+            false,
+            false, false, true, true, true, false,
+    };
+
+    public static final int[][] VECTORS = new int[][]{
+            {},
+            // Pawn
+            {},
+            // Knight
+            {
+                    NORTH + NORTH + WEST, NORTH + NORTH + EAST,
+                    SOUTH + SOUTH + WEST, SOUTH + SOUTH + EAST,
+                    WEST + WEST + NORTH, WEST + WEST + SOUTH,
+                    EAST + EAST + NORTH, EAST + EAST + SOUTH,
+            },
+            // Bishop
+            {
+                    NORTH + WEST, NORTH + EAST,
+                    SOUTH + WEST, SOUTH + EAST,
+            },
+            // Rook
+            {
+                    NORTH, SOUTH,
+                    WEST, EAST,
+            },
+            // Queen
+            {
+                    NORTH + WEST, NORTH + EAST,
+                    SOUTH + WEST, SOUTH + EAST,
+                    NORTH, SOUTH,
+                    WEST, EAST,
+            },
+            // King
+            {
+                    NORTH + WEST, NORTH + EAST,
+                    SOUTH + WEST, SOUTH + EAST,
+                    NORTH, SOUTH,
+                    WEST, EAST,
+            },
+    };
 }

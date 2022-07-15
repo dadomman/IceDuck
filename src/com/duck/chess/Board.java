@@ -134,7 +134,7 @@ public class Board {
         var piece = pieceFromTypeAndColor(Constants.PIECE_TYPE_PAWN, side_to_move);
         if (side_to_move == COLOR_WHITE) {
             if (board[i + NORTH] == 0) {
-                if (square_rank(i) == 6) {
+                if (squareRank(i) == 6) {
                     for (var promote_piece = PIECE_WHITE_KNIGHT; promote_piece <= PIECE_WHITE_QUEEN; promote_piece++) {
                         moves.add(new Move(
                                 i, i + NORTH, piece,
@@ -150,7 +150,7 @@ public class Board {
                             0, false)
                     );
 
-                    if (square_rank(i) == 1 && board[i + NORTH + NORTH] == 0) {
+                    if (squareRank(i) == 1 && board[i + NORTH + NORTH] == 0) {
                         // Double Push
                         moves.add(new Move(
                                 i, i + NORTH + NORTH, piece,
@@ -162,7 +162,7 @@ public class Board {
             }
         } else {
             if (board[i + SOUTH] == 0) {
-                if (square_rank(i) == 1) {
+                if (squareRank(i) == 1) {
                     for (var promote_piece = PIECE_BLACK_KNIGHT; promote_piece <= PIECE_BLACK_QUEEN; promote_piece++) {
                         moves.add(new Move(
                                 i, i + SOUTH, piece,
@@ -178,7 +178,7 @@ public class Board {
                             0, false)
                     );
 
-                    if (square_rank(i) == 6 && board[i + SOUTH + SOUTH] == 0) {
+                    if (squareRank(i) == 6 && board[i + SOUTH + SOUTH] == 0) {
                         // Double Push
                         moves.add(new Move(
                                 i, i + SOUTH + SOUTH, piece,
@@ -196,7 +196,7 @@ public class Board {
         if (side_to_move == COLOR_WHITE) {
             var targetSquareLeft = i + NORTH + WEST;
             var targetSquareRight = i + NORTH + EAST;
-            if (is_legal_square(targetSquareLeft)) {
+            if (isLegalSquare(targetSquareLeft)) {
                 if (targetSquareLeft == ep) {
                     moves.add(new Move(
                             i, targetSquareLeft, piece,
@@ -210,7 +210,7 @@ public class Board {
                             0, false));
                 }
             }
-            if (is_legal_square(targetSquareRight)) {
+            if (isLegalSquare(targetSquareRight)) {
                 if (targetSquareRight == ep) {
                     moves.add(new Move(
                             i, targetSquareRight, piece,
@@ -227,7 +227,7 @@ public class Board {
         } else {
             var targetSquareLeft = i + SOUTH + WEST;
             var targetSquareRight = i + SOUTH + EAST;
-            if (is_legal_square(targetSquareLeft)) {
+            if (isLegalSquare(targetSquareLeft)) {
                 if (targetSquareLeft == ep) {
                     moves.add(new Move(
                             i, targetSquareLeft, piece,
@@ -241,7 +241,7 @@ public class Board {
                             0, false));
                 }
             }
-            if (is_legal_square(targetSquareRight)) {
+            if (isLegalSquare(targetSquareRight)) {
                 if (targetSquareRight == ep) {
                     moves.add(new Move(
                             i, targetSquareRight, piece,
@@ -258,21 +258,71 @@ public class Board {
         }
     }
 
+    void genSliderMoves(int i, ArrayList<Move> moves) {
+        for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
+            if (dir == 0) {
+                break;
+            }
+            var targetSquare = i + dir;
+            while (isLegalSquare(targetSquare)) {
+                if (board[targetSquare] == 0) {
+                    moves.add(new Move(
+                            i, targetSquare, board[i],
+                            false, false, false,
+                            0, false));
+                } else {
+                    if (colorOfPiece(board[targetSquare]) != side_to_move) {
+                        moves.add(new Move(
+                                i, targetSquare, board[i],
+                                false, true, false,
+                                0, false));
+                    }
+                    break;
+                }
+                targetSquare += dir;
+            }
+        }
+    }
+
+    void genJumperMoves(int i, ArrayList<Move> moves) {
+        for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
+            if (dir == 0) {
+                break;
+            }
+            var targetSquare = i + dir;
+            if (isLegalSquare(targetSquare)) {
+                if (board[targetSquare] == 0) {
+                    moves.add(new Move(
+                            i, targetSquare, board[i],
+                            false, false, false,
+                            0, false));
+                } else if (colorOfPiece(board[targetSquare]) != side_to_move) {
+                    moves.add(new Move(
+                            i, targetSquare, board[i],
+                            false, true, false,
+                            0, false));
+                }
+            }
+        }
+    }
+
     //Declare function/method for generating moves
     public ArrayList<Move> genLegalMoves() {
         var moves = new ArrayList<Move>(16);
-        for (int i = 0; i < board.length; i++) {
-            if (!is_legal_square(i) || board[i] == 0 || colorOfPiece(board[i]) != side_to_move) {
+        for (int i = 0; i < 120; i++) {
+            if (!isLegalSquare(i) || board[i] == 0 || colorOfPiece(board[i]) != side_to_move) {
                 continue;
             }
 
-            switch (pieceTypeOfPiece(board[i])) {
-                case PIECE_TYPE_PAWN:
-                    genPawnQuietMoves(i, moves);
-                    genPawnCaptureMoves(i, moves);
-                    break;
-                default:
+            var pt = pieceTypeOfPiece(board[i]);
 
+            if (pt == PIECE_TYPE_PAWN) {
+                genPawnQuietMoves(i, moves);
+                genPawnCaptureMoves(i, moves);
+            } else if (IS_SLIDER[pt]) {
+                genSliderMoves(i, moves);
+            } else {
+                genJumperMoves(i, moves);
             }
         }
         return moves;
