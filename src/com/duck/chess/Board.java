@@ -3,6 +3,7 @@ package com.duck.chess;
 import java.util.ArrayList;
 
 import static com.duck.chess.Constants.*;
+import java.util.Arrays;
 
 // 0x88 Representation of a chess board
 /*
@@ -305,8 +306,71 @@ public class Board {
             }
         }
     }
-
+   
+    //Function checks if square i is attacked
+    boolean isSquareAttacked(int i, int color) {
+		//White is under attack
+		if (color == 0) {
+			//Corresponds to Knights and Kings
+			for (int jumperPiece = PIECE_TYPE_KNIGHT; jumperPiece != PIECE_TYPE_KING; jumperPiece = PIECE_TYPE_KING) {
+				//Fetches the directions from Vectors in Constants, allows for easy quick check
+				for (var dir : VECTORS[jumperPiece]) {
+					if (dir == 0)
+						break;
+					var targetSquare= i + dir;
+					if (isLegalSquare(targetSquare)) {
+						if (board[targetSquare] != 0 && colorOfPiece(board[targetSquare])!=side_to_move) {
+							if (pieceTypeOfPiece(board[targetSquare]) != side_to_move)
+								return true;
+						}
+							
+					}
+				}
+			}
+			//Corresponds to Slider Pieces who've been previously established
+			for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
+	            if (dir == 0) {
+	                break;
+	            }
+	            var targetSquare = i + dir;
+	            while (isLegalSquare(targetSquare)) {
+	            	if (board[targetSquare] != 0) {
+	                    if (colorOfPiece(board[targetSquare]) != side_to_move) {
+	                    	if (board[targetSquare] == PIECE_TYPE_BISHOP && Arrays.binarySearch(VECTORS[PIECE_TYPE_BISHOP] , dir)!= -1)
+	                    		return true;
+	                    	else if (board[targetSquare] == PIECE_TYPE_ROOK && Arrays.binarySearch(VECTORS[PIECE_TYPE_ROOK] , dir)!= -1)
+	                    		return true;
+	                    	else if (board[targetSquare] == PIECE_TYPE_QUEEN && Arrays.binarySearch(VECTORS[PIECE_TYPE_QUEEN], dir)!= -1)
+	                    		return true;
+	                    	
+	                    }
+	                    break;
+	                }
+	                targetSquare += dir;
+	            }
+			
+				
+			}
+			//This one functions a bit differently as it uses Pawns
+			int pawnTarget[] = new int[] {SOUTH + EAST, SOUTH + WEST};
+			for (var dir : pawnTarget) {
+				if(dir == 0)
+					break;
+				var targetSquare = i + dir;
+				if (board[targetSquare] == 7) {
+					return true;
+				}
+				else if (board[targetSquare + SOUTH] == 7 && 96 <= targetSquare + SOUTH && targetSquare + SOUTH <= 103 ) {
+					return true;
+				}
+		}
+		}
+		return false;
+		}
+    
+    
     //Declare function/method for generating moves
+    
     public ArrayList<Move> genLegalMoves() {
         var moves = new ArrayList<Move>(16);
         for (int i = 0; i < 120; i++) {
