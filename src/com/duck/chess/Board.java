@@ -3,7 +3,6 @@ package com.duck.chess;
 import java.util.ArrayList;
 
 import static com.duck.chess.Constants.*;
-import java.util.Arrays;
 
 // 0x88 Representation of a chess board
 /*
@@ -21,6 +20,8 @@ import java.util.Arrays;
 public class Board {
     // Board Declaration
     public int[] board = new int[128];
+    // King Locations
+    public int[] kingLocations = new int[2];
     // Side to move, 0 = white, 1 = black
     public int side_to_move = 0;
     // Castle rights, four bits KQkq
@@ -28,8 +29,8 @@ public class Board {
     // En Passant square
     // Since EP square can never be 0 (must be on 3rd or 6th rank), we use 0 for NO_EP
     public int ep = 0;
-    //Integer representing the move number
-    public int movecount = 1;
+    // Integer representing the move number
+    public int moveCount = 1;
 
     // Empty board
     public Board() {
@@ -59,13 +60,19 @@ public class Board {
                     case 'B' -> board[sq + inc] = Constants.PIECE_WHITE_BISHOP;
                     case 'R' -> board[sq + inc] = Constants.PIECE_WHITE_ROOK;
                     case 'Q' -> board[sq + inc] = Constants.PIECE_WHITE_QUEEN;
-                    case 'K' -> board[sq + inc] = Constants.PIECE_WHITE_KING;
+                    case 'K' -> {
+                        board[sq + inc] = Constants.PIECE_WHITE_KING;
+                        kingLocations[0] = sq + inc;
+                    }
                     case 'p' -> board[sq + inc] = Constants.PIECE_BLACK_PAWN;
                     case 'n' -> board[sq + inc] = Constants.PIECE_BLACK_KNIGHT;
                     case 'b' -> board[sq + inc] = Constants.PIECE_BLACK_BISHOP;
                     case 'r' -> board[sq + inc] = Constants.PIECE_BLACK_ROOK;
                     case 'q' -> board[sq + inc] = Constants.PIECE_BLACK_QUEEN;
-                    case 'k' -> board[sq + inc] = Constants.PIECE_BLACK_KING;
+                    case 'k' -> {
+                        board[sq + inc] = Constants.PIECE_BLACK_KING;
+                        kingLocations[1] = sq + inc;
+                    }
                     default -> {
                     }
                 }
@@ -88,8 +95,6 @@ public class Board {
                 case 'Q' -> castle_rights |= Constants.CASTLE_WHITE_Q;
                 case 'k' -> castle_rights |= Constants.CASTLE_BLACK_K;
                 case 'q' -> castle_rights |= Constants.CASTLE_BLACK_Q;
-                default -> {
-                }
             }
         }
     }
@@ -306,126 +311,7 @@ public class Board {
             }
         }
     }
-   
-    //Function checks if square i is attacked
-    boolean isSquareAttacked(int i, int color) {
-		//White is under attack
-		if (color == 0) {
-			//Corresponds to Knights and Kings
-			for (int jumperPiece = PIECE_TYPE_KNIGHT; jumperPiece != PIECE_TYPE_KING; jumperPiece = PIECE_TYPE_KING) {
-				//Fetches the directions from Vectors in Constants, allows for easy quick check
-				for (var dir : VECTORS[jumperPiece]) {
-					if (dir == 0)
-						break;
-					var targetSquare= i + dir;
-					if (isLegalSquare(targetSquare)) {
-						if (board[targetSquare] != 0 && colorOfPiece(board[targetSquare])!=side_to_move) {
-							if (pieceTypeOfPiece(board[targetSquare]) != side_to_move)
-								return true;
-						}
-							
-					}
-				}
-			}
-			//Corresponds to Slider Pieces who've been previously established
-			for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
-	            if (dir == 0) {
-	                break;
-	            }
-	            var targetSquare = i + dir;
-	            while (isLegalSquare(targetSquare)) {
-	            	if (board[targetSquare] != 0) {
-	                    if (colorOfPiece(board[targetSquare]) != side_to_move) {
-	                    	if (board[targetSquare] == PIECE_TYPE_BISHOP && Arrays.binarySearch(VECTORS[PIECE_TYPE_BISHOP] , dir)!= -1)
-	                    		return true;
-	                    	else if (board[targetSquare] == PIECE_TYPE_ROOK && Arrays.binarySearch(VECTORS[PIECE_TYPE_ROOK] , dir)!= -1)
-	                    		return true;
-	                    	else if (board[targetSquare] == PIECE_TYPE_QUEEN && Arrays.binarySearch(VECTORS[PIECE_TYPE_QUEEN], dir)!= -1)
-	                    		return true;
-	                    	
-	                    }
-	                    break;
-	                }
-	                targetSquare += dir;
-	            }
-			
-				
-			}
-			//This one functions a bit differently as it uses Pawns
-			int pawnTarget[] = new int[] {SOUTH + EAST, SOUTH + WEST};
-			for (var dir : pawnTarget) {
-				if(dir == 0)
-					break;
-				var targetSquare = i + dir;
-				if (board[targetSquare] == 7) {
-					return true;
-				}
-				else if (board[targetSquare + SOUTH] == 7 && 96 <= targetSquare + SOUTH && targetSquare + SOUTH <= 103 ) {
-					return true;
-				}
-		}
-		}
-		else if(color == 1) {
-			//Corresponds to Knights and Kings
-			for (int jumperPiece = PIECE_TYPE_KNIGHT; jumperPiece != PIECE_TYPE_KING; jumperPiece = PIECE_TYPE_KING) {
-				//Fetches the directions from Vectors in Constants, allows for easy quick check
-				for (var dir : VECTORS[jumperPiece]) {
-					if (dir == 0)
-						break;
-					var targetSquare= i + dir;
-					if (isLegalSquare(targetSquare)) {
-						if (board[targetSquare] != 0 && colorOfPiece(board[targetSquare])!=side_to_move) {
-							if (pieceTypeOfPiece(board[targetSquare]) != side_to_move)
-								return true;
-						}
-							
-					}
-				}
-			}
-			//Corresponds to Slider Pieces who've been previously established
-			for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
-	            if (dir == 0) {
-	                break;
-	            }
-	            var targetSquare = i + dir;
-	            while (isLegalSquare(targetSquare)) {
-	            	if (board[targetSquare] != 0) {
-	                    if (colorOfPiece(board[targetSquare]) != side_to_move) {
-	                    	if (board[targetSquare] == PIECE_TYPE_BISHOP && Arrays.binarySearch(VECTORS[PIECE_TYPE_BISHOP] , dir)!= -1)
-	                    		return true;
-	                    	else if (board[targetSquare] == PIECE_TYPE_ROOK && Arrays.binarySearch(VECTORS[PIECE_TYPE_ROOK] , dir)!= -1)
-	                    		return true;
-	                    	else if (board[targetSquare] == PIECE_TYPE_QUEEN && Arrays.binarySearch(VECTORS[PIECE_TYPE_QUEEN], dir)!= -1)
-	                    		return true;
-	                    	
-	                    }
-	                    break;
-	                }
-	                targetSquare += dir;
-	            }
-			
-				
-			}
-			//This one functions a bit differently as it uses Pawns
-			int pawnTarget[] = new int[] {NORTH + EAST, NORTH + WEST};
-			for (var dir : pawnTarget) {
-				if(dir == 0)
-					break;
-				var targetSquare = i + dir;
-				if (board[targetSquare] == 7) {
-					return true;
-				}
-				else if (board[targetSquare + SOUTH] == 1 && 16 <= targetSquare + SOUTH && targetSquare + SOUTH <= 23 ) {
-					return true;
-				}
-		}
-		}
-		return false;
-		}
-    
-    
-    //Declare function/method for generating moves
-    
+
     public ArrayList<Move> genLegalMoves() {
         var moves = new ArrayList<Move>(16);
         for (int i = 0; i < 120; i++) {
@@ -442,8 +328,123 @@ public class Board {
                 genSliderMoves(i, moves);
             } else {
                 genJumperMoves(i, moves);
+
+                if (pt == PIECE_TYPE_KING) {
+                    // Castling
+                    var ks = kingLocations[side_to_move];
+
+                    if (side_to_move == COLOR_WHITE) {
+                        if ((castle_rights & CASTLE_WHITE_K) != 0) {
+                            if (board[ks + EAST] == PIECE_NONE && board[ks + EAST + EAST] == PIECE_NONE) {
+
+                                if (!isSquareAttacked(ks, COLOR_BLACK) && !isSquareAttacked(ks + EAST, COLOR_BLACK)) {
+                                    moves.add(new Move(
+                                            ks, ks + EAST + EAST, board[i],
+                                            false, false, false,
+                                            0, true));
+                                }
+                            }
+                        }
+
+                        if ((castle_rights & CASTLE_WHITE_Q) != 0) {
+                            if (board[ks + WEST] == PIECE_NONE && board[ks + WEST + WEST] == PIECE_NONE && board[ks + WEST + WEST + WEST] == PIECE_NONE) {
+
+                                if (!isSquareAttacked(ks, COLOR_BLACK) && !isSquareAttacked(ks + WEST, COLOR_BLACK)) {
+                                    moves.add(new Move(
+                                            ks, ks + WEST + WEST, board[i],
+                                            false, false, false,
+                                            0, true));
+                                }
+                            }
+                        }
+                    } else {
+                        if ((castle_rights & CASTLE_BLACK_K) != 0) {
+                            if (board[ks + EAST] == PIECE_NONE && board[ks + EAST + EAST] == PIECE_NONE) {
+
+                                if (!isSquareAttacked(ks, COLOR_WHITE) && !isSquareAttacked(ks + EAST, COLOR_WHITE)) {
+                                    moves.add(new Move(
+                                            ks, ks + EAST + EAST, board[i],
+                                            false, false, false,
+                                            0, true));
+                                }
+                            }
+                        }
+
+                        if ((castle_rights & CASTLE_BLACK_Q) != 0) {
+                            if (board[ks + WEST] == PIECE_NONE && board[ks + WEST + WEST] == PIECE_NONE && board[ks + WEST + WEST + WEST] == PIECE_NONE) {
+
+                                if (!isSquareAttacked(ks, COLOR_WHITE) && !isSquareAttacked(ks + WEST, COLOR_WHITE)) {
+                                    moves.add(new Move(
+                                            ks, ks + WEST + WEST, board[i],
+                                            false, false, false,
+                                            0, true));
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         return moves;
+    }
+
+    // Function checks if square i is attacked by color
+    public boolean isSquareAttacked(int i, int color) {
+        for (var pt = PIECE_TYPE_PAWN; pt <= PIECE_TYPE_KING; pt++) {
+            switch (pt) {
+                case PIECE_TYPE_PAWN:
+                    // Different based on color
+                    int[] pawnTarget =
+                            (color == COLOR_WHITE) ?
+                                    new int[]{SOUTH + EAST, SOUTH + WEST} :
+                                    new int[]{NORTH + EAST, NORTH + WEST};
+
+                    for (var dir : pawnTarget) {
+                        var targetSquare = i + dir;
+                        if (isLegalSquare(targetSquare) && board[targetSquare] == pieceFromTypeAndColor(pt, color)) {
+                            return true;
+                        }
+                    }
+
+                    break;
+
+                case PIECE_TYPE_KNIGHT:
+                case PIECE_TYPE_KING:
+                    // Fetches the directions from Vectors in Constants
+                    for (var dir : VECTORS[pt]) {
+                        if (dir == 0) {
+                            break;
+                        }
+                        var targetSquare = i + dir;
+                        if (isLegalSquare(targetSquare) && board[targetSquare] == pieceFromTypeAndColor(pt, color)) {
+                            return true;
+                        }
+                    }
+                    break;
+
+                case PIECE_TYPE_BISHOP:
+                case PIECE_TYPE_ROOK:
+                case PIECE_TYPE_QUEEN:
+                    for (var dir : VECTORS[pt]) {
+                        if (dir == 0) {
+                            break;
+                        }
+                        var targetSquare = i + dir;
+                        while (isLegalSquare(targetSquare)) {
+                            if (board[targetSquare] != PIECE_NONE) {
+                                if (board[targetSquare] == pieceFromTypeAndColor(pt, color)) {
+                                    return true;
+                                }
+                                break;
+                            }
+
+                            targetSquare += dir;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        return false;
     }
 }
