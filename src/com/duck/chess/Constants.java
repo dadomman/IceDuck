@@ -129,6 +129,46 @@ public final class Constants {
     public static final int SOUTH = -16;
     public static final int EAST = 1;
     public static final int WEST = -1;
+    public static final boolean[] IS_SLIDER = new boolean[]{
+            false,
+            false, false, true, true, true, false,
+    };
+    public static final int[][] VECTORS = new int[][]{
+            {},
+            // Pawn
+            {},
+            // Knight
+            {
+                    NORTH + NORTH + WEST, NORTH + NORTH + EAST,
+                    SOUTH + SOUTH + WEST, SOUTH + SOUTH + EAST,
+                    WEST + WEST + NORTH, WEST + WEST + SOUTH,
+                    EAST + EAST + NORTH, EAST + EAST + SOUTH,
+            },
+            // Bishop
+            {
+                    NORTH + WEST, NORTH + EAST,
+                    SOUTH + WEST, SOUTH + EAST,
+            },
+            // Rook
+            {
+                    NORTH, SOUTH,
+                    WEST, EAST,
+            },
+            // Queen
+            {
+                    NORTH + WEST, NORTH + EAST,
+                    SOUTH + WEST, SOUTH + EAST,
+                    NORTH, SOUTH,
+                    WEST, EAST,
+            },
+            // King
+            {
+                    NORTH + WEST, NORTH + EAST,
+                    SOUTH + WEST, SOUTH + EAST,
+                    NORTH, SOUTH,
+                    WEST, EAST,
+            },
+    };
     // Castle right bits
     public static int CASTLE_WHITE_K = 0b1000;
     public static int CASTLE_WHITE_Q = 0b0100;
@@ -187,47 +227,5 @@ public final class Constants {
     public static boolean isLegalSquare(int sq) {
         return (sq & 0x88) == 0;
     }
-
-    public static final boolean[] IS_SLIDER = new boolean[]{
-            false,
-            false, false, true, true, true, false,
-    };
-
-    public static final int[][] VECTORS = new int[][]{
-            {},
-            // Pawn
-            {},
-            // Knight
-            {
-                    NORTH + NORTH + WEST, NORTH + NORTH + EAST,
-                    SOUTH + SOUTH + WEST, SOUTH + SOUTH + EAST,
-                    WEST + WEST + NORTH, WEST + WEST + SOUTH,
-                    EAST + EAST + NORTH, EAST + EAST + SOUTH,
-            },
-            // Bishop
-            {
-                    NORTH + WEST, NORTH + EAST,
-                    SOUTH + WEST, SOUTH + EAST,
-            },
-            // Rook
-            {
-                    NORTH, SOUTH,
-                    WEST, EAST,
-            },
-            // Queen
-            {
-                    NORTH + WEST, NORTH + EAST,
-                    SOUTH + WEST, SOUTH + EAST,
-                    NORTH, SOUTH,
-                    WEST, EAST,
-            },
-            // King
-            {
-                    NORTH + WEST, NORTH + EAST,
-                    SOUTH + WEST, SOUTH + EAST,
-                    NORTH, SOUTH,
-                    WEST, EAST,
-            },
-    };
-    }
+}
 

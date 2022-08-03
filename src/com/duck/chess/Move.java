@@ -1,6 +1,7 @@
 package com.duck.chess;
 
-import static com.duck.chess.Constants.*;
+import static com.duck.chess.Constants.PIECE_TO_CHAR;
+import static com.duck.chess.Constants.SQUARE_TO_STRING;
 
 public class Move {
     // Private for now because we might want to do encoding in the future.
@@ -28,6 +29,10 @@ public class Move {
     @Override
     public String toString() {
         return SQUARE_TO_STRING[source] + "-" + SQUARE_TO_STRING[target] + (isCapture ? " x" : "") + (isCastle ? " Castle" : "") + (isEnPassant ? " e.p." : "") + (promotionPiece != 0 ? " =" + PIECE_TO_CHAR[promotionPiece] : "");
+    }
+
+    public String toUCI() {
+        return SQUARE_TO_STRING[source] + SQUARE_TO_STRING[target] + (promotionPiece != 0 ? PIECE_TO_CHAR[promotionPiece] : "");
     }
 
     public int getSource() {
