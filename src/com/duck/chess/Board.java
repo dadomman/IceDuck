@@ -523,7 +523,7 @@ public class Board {
     public ArrayList<Move> genLegalMoves() {
         var moves = new ArrayList<Move>(16);
         for (int i = 0; i < 120; i++) {
-            if (!isLegalSquare(i) || board[i] == 0 || colorOfPiece(board[i]) != side_to_move) {
+            if (!isLegalSquare(i) || board[i] == PIECE_NONE || colorOfPiece(board[i]) != side_to_move) {
                 continue;
             }
 
