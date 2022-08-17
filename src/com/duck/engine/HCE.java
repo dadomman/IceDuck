@@ -105,4 +105,8 @@ public class HCE {
         }
         return score;
     }
+
+    public static int evaluateForSTM(Board board) {
+        return board.side_to_move == Constants.COLOR_WHITE ? evaluate(board) : -evaluate(board);
+    }
 }
