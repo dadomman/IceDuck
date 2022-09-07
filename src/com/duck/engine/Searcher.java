@@ -14,6 +14,9 @@ public class Searcher {
             board.makeMove(moves.get(i));
             bestValue = Math.max(bestValue, - Negamax(board, depth - 1, -beta, -alpha));
             board.unmakeMove();
+            if (alpha >= beta){
+                break
+            }
         }
 
         return alpha;
