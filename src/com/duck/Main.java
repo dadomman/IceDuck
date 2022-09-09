@@ -13,6 +13,7 @@ public class Main {
 
         var searcher = new Searcher();
 
-    System.out.println(searcher.Negamax(board, 5, -99999, 99999));
+        System.out.println(searcher.NegamaxRoot(board, 2));
+        System.out.println(searcher.bestMove);
     }
 }
