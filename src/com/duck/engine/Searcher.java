@@ -12,13 +12,16 @@ public class Searcher {
 
         for(var i = 0; i < moves.size(); i++) {
             board.makeMove(moves.get(i));
-            bestValue = Math.max(bestValue, - Negamax(board, depth - 1, -beta, -alpha));
+            int value = -Negamax(board, depth - 1, -beta, -alpha);
+            bestValue = Math.max(bestValue, value);
             board.unmakeMove();
+
+            alpha = Math.max(alpha, bestValue);
             if (alpha >= beta){
-                break
+                break;
             }
         }
 
-        return alpha;
+        return bestValue;
     }
 }
