@@ -20,8 +20,8 @@ public class HCE {
                      98,134, 61, 95, 68,126, 34,  0,   0,0,0,0,0,0,0,0,
                      -6,  7, 26, 31, 65, 56, 25,-13,   0,0,0,0,0,0,0,0,
                     -14, 13,  6, 21, 23, 12, 17,-18,   0,0,0,0,0,0,0,0,
-                    -18, -1, 10, 12, 13, -1, -2,-21,   0,0,0,0,0,0,0,0,
-                    -26, -4, -4,-10,  3,  3, 33,-13,   0,0,0,0,0,0,0,0,
+                    -18, -1, 10, 13, 16, -1, -2,-21,   0,0,0,0,0,0,0,0,
+                    -26, -4, -4,-10,  4,  3, 33,-13,   0,0,0,0,0,0,0,0,
                     -35, -1,-20,-23,-15, 24, 38,-22,   0,0,0,0,0,0,0,0,
                       0,  0,  0,  0,  0,  0,  0,  0,   0,0,0,0,0,0,0,0,
             },
@@ -32,7 +32,7 @@ public class HCE {
                     -30,  0, 12, 17, 17, 12,  0,-30,   0,0,0,0,0,0,0,0,
                     -30,  5, 15, 19, 30, 19,  5,-30,   0,0,0,0,0,0,0,0,
                     -30,  0, 15, 17, 13, 15,  0,-30,   0,0,0,0,0,0,0,0,
-                    -30, -5, 14, 15, 20, 18, 10,-30,   0,0,0,0,0,0,0,0,
+                    -30, -5, 14, 15, 20, 19, 10,-30,   0,0,0,0,0,0,0,0,
                     -40,-20, -8,  2,  4,  0,-20,-40,   0,0,0,0,0,0,0,0,
                     -50,-40,-30,-30,-30,-30,-40,-50,   0,0,0,0,0,0,0,0,
             },
@@ -84,7 +84,10 @@ public class HCE {
     };
 
     public static int evaluate(Board board) {
+        int mat = 0;
+        int psqt = 0;
         int score = 0;
+
         for (int i = 0; i < 120; i++) {
             if (!Constants.isLegalSquare(i) || board.board[i] == Constants.PIECE_NONE) {
                 continue;
@@ -92,17 +95,19 @@ public class HCE {
             int piece = board.board[i];
             int pt = Constants.pieceTypeOfPiece(piece) - 1;  // -1 for 1-based indexing
 
-            int mat, psqt;
-            if (Constants.colorOfPiece(piece) == Constants.COLOR_WHITE) {
-                mat = Weights[pt];
-                psqt = PSQT[pt][i ^ 56];  // flips due to encoding
-            } else {
-                mat = -Weights[pt];
-                psqt = -PSQT[pt][i];  // flip & flip = no flip
-            }
 
-            score += mat + psqt;
+            if (Constants.colorOfPiece(piece) == Constants.COLOR_WHITE) {
+                mat += Weights[pt];
+                psqt += PSQT[pt][i ^ 112];  // flips due to encoding
+            } else {
+                mat -= Weights[pt];
+                psqt -= PSQT[pt][i];  // flip & flip = no flip
+            }
         }
+
+        score += mat;
+        score += psqt;
+
         return score;
     }
 

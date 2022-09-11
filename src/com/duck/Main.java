@@ -2,8 +2,6 @@ package com.duck;
 
 import com.duck.chess.Board;
 import com.duck.chess.Constants;
-import com.duck.engine.HCE;
-import com.duck.engine.Perft;
 import com.duck.engine.Searcher;
 
 public class Main {
@@ -13,7 +11,7 @@ public class Main {
 
         var searcher = new Searcher();
 
-        System.out.println(searcher.NegamaxRoot(board, 2));
+        System.out.println(searcher.NegamaxRoot(board, 5));
         System.out.println(searcher.bestMove);
     }
 }
