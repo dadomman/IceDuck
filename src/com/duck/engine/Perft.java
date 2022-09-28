@@ -1,7 +1,6 @@
 package com.duck.engine;
 
 import com.duck.chess.Board;
-import com.duck.chess.Constants;
 
 public final class Perft {
     public static void divPerft(Board board, int depth) {
@@ -9,11 +8,7 @@ public final class Perft {
         long nodes = 0;
 
         for (var m : moves) {
-            board.makeMove(m);
-            if (board.isSquareAttacked(board.kingLocations[Constants.COLOR_OPPONENT[board.side_to_move]], board.side_to_move)) {
-                board.unmakeMove();
-                continue;
-            }
+            if (!board.makeMove(m)) continue;
             var r = perft(board, depth - 1);
             nodes += r;
             System.out.println(m.toUCI() + ": " + r);
@@ -32,11 +27,7 @@ public final class Perft {
         }
 
         for (var m : moves) {
-            board.makeMove(m);
-            if (board.isSquareAttacked(board.kingLocations[Constants.COLOR_OPPONENT[board.side_to_move]], board.side_to_move)) {
-                board.unmakeMove();
-                continue;
-            }
+            if (!board.makeMove(m)) continue;
             nodes += perft(board, depth - 1);
             board.unmakeMove();
         }

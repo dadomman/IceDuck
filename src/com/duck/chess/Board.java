@@ -151,7 +151,7 @@ public class Board {
         // Hashing
     }
 
-    public void makeMove(Move move) {
+    public boolean makeMove(Move move) {
         fifty++;
 
         var source = move.getSource();
@@ -239,6 +239,13 @@ public class Board {
                 removePiece(PIECE_WHITE_PAWN, target + NORTH);
             }
         }
+
+        if (isSquareAttacked(kingLocations[COLOR_OPPONENT[side_to_move]], side_to_move)) {
+            unmakeMove();
+            return false;
+        }
+
+        return true;
     }
 
     public void unmakeMove() {
@@ -521,7 +528,7 @@ public class Board {
     }
 
     public ArrayList<Move> genLegalMoves() {
-        var moves = new ArrayList<Move>(16);
+        var moves = new ArrayList<Move>(32);
         for (int i = 0; i < 120; i++) {
             if (!isLegalSquare(i) || board[i] == PIECE_NONE || colorOfPiece(board[i]) != side_to_move) {
                 continue;
