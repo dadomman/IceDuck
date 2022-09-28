@@ -4,6 +4,7 @@ import com.duck.chess.Board;
 import com.duck.chess.Constants;
 import com.duck.chess.Move;
 
+// Searcher Class
 public class Searcher {
     public static int MateValue = 999999;
     public static int MaxDepth = 128;
@@ -14,6 +15,7 @@ public class Searcher {
     public Move[][] pvTable = new Move[MaxDepth][MaxDepth];
     public int[] pvLength = new int[MaxDepth];
 
+    // Clears PV table
     public void ClearSearch() {
         for (int i = 0; i < MaxDepth; i++) {
             pvLength[i] = 0;
@@ -23,12 +25,14 @@ public class Searcher {
         }
     }
 
+    // Prints the Principal Variation without newline
     public void PrintPV() {
         for (int i = 0; i < pvLength[ply]; i++) {
             System.out.print(pvTable[0][i].toUCI() + (i == pvLength[ply] - 1 ? "" : " "));
         }
     }
 
+    // Root Search Function
     public int NegamaxRoot(Board board, int depth) {
         pvLength[ply] = 0;
 
@@ -41,9 +45,9 @@ public class Searcher {
             return HCE.evaluateForSTM(board);
         }
         var moves = board.genLegalMoves();
-        final int mateValue = MateValue;
-        int bestValue = -mateValue;
+        int bestValue = -MateValue;
 
+        // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
             Move m = moves.get(i);
             if (!board.makeMove(m)) continue;
@@ -53,8 +57,8 @@ public class Searcher {
             ply--;
             board.unmakeMove();
 
-            // alpha = Math.max(alpha, bestValue);
             if (value > bestValue) {
+                // Beter move
                 bestValue = value;
                 bestMove = m;
 
@@ -75,6 +79,7 @@ public class Searcher {
         return bestValue;
     }
 
+    // Recursive Search Function
     public int Negamax(Board board, int depth, int alpha, int beta) {
         pvLength[ply] = 0;
 
@@ -82,6 +87,7 @@ public class Searcher {
             return HCE.evaluateForSTM(board);
         }
 
+        // Mate-Distance Pruning
         {
             var rAlpha = Math.max(alpha, -MateValue + ply);
             var rBeta = Math.min(beta, MateValue - ply - 1);
@@ -91,21 +97,25 @@ public class Searcher {
             }
         }
 
+        // Horizon
         if (depth == 0) {
+            // TODO: Add quiescence search
             return HCE.evaluateForSTM(board);
         }
 
+        // Generate Legal Moves
         var moves = board.genLegalMoves();
-        final int mateValue = MateValue;
-        int bestValue = -mateValue;
+        int bestValue = -MateValue;
 
         var movesMade = 0;
 
+        // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
             var m = moves.get(i);
             if (!board.makeMove(m)) continue;
             ply++;
             movesMade++;
+            // Get score from next Ply
             int value = -Negamax(board, depth - 1, -beta, -alpha);
             ply--;
             board.unmakeMove();
@@ -116,10 +126,12 @@ public class Searcher {
                 if (bestValue > alpha) {
                     alpha = bestValue;
 
+                    // Update Principal Variation
                     pvTable[ply][0] = m;
                     System.arraycopy(pvTable[ply + 1], 0, pvTable[ply], 1, pvLength[ply + 1]);
                     pvLength[ply] = pvLength[ply + 1] + 1;
 
+                    // Alpha-Beta Pruning
                     if (alpha >= beta) {
                         break;
                     }
@@ -127,9 +139,10 @@ public class Searcher {
             }
         }
 
+        // Checkmate or Stalemate
         if (movesMade == 0) {
             if (board.isSquareAttacked(board.kingLocations[board.side_to_move], Constants.COLOR_OPPONENT[board.side_to_move])) {
-                return -mateValue + ply;
+                return -MateValue + ply;
             } else {
                 return 0;
             }
