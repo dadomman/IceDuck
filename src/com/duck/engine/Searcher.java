@@ -7,7 +7,7 @@ import com.duck.chess.Move;
 // Searcher Class
 public class Searcher {
     public static int MateValue = 999999;
-    public static int MaxDepth = 128;
+    public static int MaxDepth = 256;
 
     public Move bestMove = null;
     public int ply = 0;
@@ -42,7 +42,7 @@ public class Searcher {
         ply = 0;
 
         if (depth == 0) {
-            return HCE.evaluateForSTM(board);
+            return Quiescence(board, alpha, beta);
         }
         var moves = board.genLegalMoves();
         int bestValue = -MateValue;
@@ -81,13 +81,18 @@ public class Searcher {
 
     // Quiescence Search Function
     public int Quiescence(Board board, int alpha, int beta) {
-        pvLength[ply] = 0;
+        if (ply >= MaxDepth) {
+            return HCE.evaluateForSTM(board);
+        }
+
         var qmoves = board.genCaptureMoves();
         int value = HCE.evaluateForSTM(board);
         for (var i = 0; i < qmoves.size(); i++) {
             var moveget = qmoves.get(i);
-            board.makeMove(moveget);
+            if (!board.makeMove(moveget)) continue;
+            ply++;
             int score = -Quiescence(board, -beta, -alpha);
+            ply--;
             board.unmakeMove();
 
             if (score > value) {
@@ -126,8 +131,7 @@ public class Searcher {
 
         // Horizon
         if (depth == 0) {
-            // TODO: Add quiescence search
-            return HCE.evaluateForSTM(board);
+            return Quiescence(board, alpha, beta);
         }
 
         // Generate Legal Moves

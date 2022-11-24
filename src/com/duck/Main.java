@@ -11,9 +11,13 @@ public class Main {
 
         var searcher = new Searcher();
 
-        System.out.println(searcher.NegamaxRoot(board, 8));
-        System.out.println(searcher.bestMove.toUCI());
-        searcher.PrintPV();
-        System.out.println();
+        for (int depth = 1; depth <= 5; depth++) {
+            System.out.println("Depth: " + depth);
+            System.out.println(searcher.NegamaxRoot(board, depth));
+            System.out.println(searcher.bestMove.toUCI());
+            searcher.PrintPV();
+            System.out.println();
+            System.out.println();
+        }
     }
 }
