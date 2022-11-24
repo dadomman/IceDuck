@@ -58,7 +58,7 @@ public class Searcher {
             board.unmakeMove();
 
             if (value > bestValue) {
-                // Beter move
+                // Better move
                 bestValue = value;
                 bestMove = m;
 
@@ -77,6 +77,23 @@ public class Searcher {
         }
 
         return bestValue;
+    }
+  //Quiescence Search Function
+    public int Quiescence(Board board, int alpha, int beta) {
+        pvLength[ply] = 0;
+        var qmoves = board.genCaptureMoves();
+        int value = HCE.evaluateForSTM(board);
+        for (var i = 0; i < qmoves.size(); i++) {
+            var moveget = qmoves.get(i);
+            board.makeMove(moveget);
+            value = Math.max(value, -Quiescence(board, -beta, -alpha));
+            board.unmakeMove();
+            alpha = Math.max(alpha, value);
+            if (alpha > beta) {
+                break;
+            }
+        }
+        return value;
     }
 
     // Recursive Search Function
