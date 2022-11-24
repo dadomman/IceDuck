@@ -603,6 +603,66 @@ public class Board {
         return moves;
     }
 
+    void genCaptureSliderMoves(int i, ArrayList<Move> moves) {
+        for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
+            if (dir == 0) {
+                break;
+            }
+            var targetSquare = i + dir;
+            while (isLegalSquare(targetSquare)) {
+                if (board[targetSquare] != 0) {
+                    if (colorOfPiece(board[targetSquare]) != side_to_move) {
+                        moves.add(new Move(
+                                i, targetSquare, board[i],
+                                false, true, false,
+                                0, false));
+                    }
+                    break;
+                }
+                targetSquare += dir;
+            }
+        }
+    }
+
+    void genCaptureJumperMoves(int i, ArrayList<Move> moves) {
+        for (var dir : VECTORS[pieceTypeOfPiece(board[i])]) {
+            if (dir == 0) {
+                break;
+            }
+            var targetSquare = i + dir;
+            if (isLegalSquare(targetSquare)) {
+                if (board[targetSquare] != 0) {
+                    if (colorOfPiece(board[targetSquare]) != side_to_move) {
+                        moves.add(new Move(
+                            i, targetSquare, board[i],
+                            false, true, false,
+                            0, false));
+                    }
+                }
+            }
+        }
+    }
+    //genCaptureMoves
+    public ArrayList<Move> genCaptureMoves() {
+        var moves = new ArrayList<Move>(32);
+        for (int i = 0; i < 120; i++) {
+            if (!isLegalSquare(i) || board[i] == PIECE_NONE || colorOfPiece(board[i]) != side_to_move) {
+                continue;
+            }
+
+            var pt = pieceTypeOfPiece(board[i]);
+
+            if (pt == PIECE_TYPE_PAWN) {
+                genPawnCaptureMoves(i, moves);
+            } else if (IS_SLIDER[pt]) {
+                genCaptureSliderMoves(i, moves);
+            } else {
+                genCaptureJumperMoves(i, moves);
+            }
+        }
+        return moves;
+    }
+
     // Function checks if square i is attacked by color
     public boolean isSquareAttacked(int i, int color) {
         for (var pt = PIECE_TYPE_PAWN; pt <= PIECE_TYPE_KING; pt++) {
