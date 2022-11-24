@@ -78,7 +78,8 @@ public class Searcher {
 
         return bestValue;
     }
-  //Quiescence Search Function
+
+    // Quiescence Search Function
     public int Quiescence(Board board, int alpha, int beta) {
         pvLength[ply] = 0;
         var qmoves = board.genCaptureMoves();
@@ -86,17 +87,26 @@ public class Searcher {
         for (var i = 0; i < qmoves.size(); i++) {
             var moveget = qmoves.get(i);
             board.makeMove(moveget);
-            value = Math.max(value, -Quiescence(board, -beta, -alpha));
+            int score = -Quiescence(board, -beta, -alpha);
             board.unmakeMove();
-            alpha = Math.max(alpha, value);
-            if (alpha > beta) {
-                break;
+
+            if (score > value) {
+                value = score;
+
+                if (value > alpha) {
+                    alpha = value;
+
+                    if (alpha >= beta) {
+                        break;
+                    }
+                }
             }
         }
+
         return value;
     }
 
-    // Recursive Search Function
+    // Recursive Negamax Search Function
     public int Negamax(Board board, int depth, int alpha, int beta) {
         pvLength[ply] = 0;
 
@@ -122,7 +132,7 @@ public class Searcher {
 
         // Generate Legal Moves
         var moves = board.genLegalMoves();
-        int bestValue = -MateValue;
+        int value = -MateValue;
 
         var movesMade = 0;
 
@@ -133,15 +143,15 @@ public class Searcher {
             ply++;
             movesMade++;
             // Get score from next Ply
-            int value = -Negamax(board, depth - 1, -beta, -alpha);
+            int score = -Negamax(board, depth - 1, -beta, -alpha);
             ply--;
             board.unmakeMove();
 
-            if (value > bestValue) {
-                bestValue = value;
+            if (score > value) {
+                value = score;
 
-                if (bestValue > alpha) {
-                    alpha = bestValue;
+                if (value > alpha) {
+                    alpha = value;
 
                     // Update Principal Variation
                     pvTable[ply][0] = m;
@@ -165,6 +175,6 @@ public class Searcher {
             }
         }
 
-        return bestValue;
+        return value;
     }
 }

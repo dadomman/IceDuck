@@ -634,14 +634,15 @@ public class Board {
                 if (board[targetSquare] != 0) {
                     if (colorOfPiece(board[targetSquare]) != side_to_move) {
                         moves.add(new Move(
-                            i, targetSquare, board[i],
-                            false, true, false,
-                            0, false));
+                                i, targetSquare, board[i],
+                                false, true, false,
+                                0, false));
                     }
                 }
             }
         }
     }
+
     //genCaptureMoves
     public ArrayList<Move> genCaptureMoves() {
         var moves = new ArrayList<Move>(32);
