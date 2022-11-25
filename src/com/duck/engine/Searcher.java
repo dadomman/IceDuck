@@ -4,6 +4,8 @@ import com.duck.chess.Board;
 import com.duck.chess.Constants;
 import com.duck.chess.Move;
 
+import java.util.ArrayList;
+
 // Searcher Class
 public class Searcher {
     public static int MateValue = 999999;
@@ -29,6 +31,12 @@ public class Searcher {
     public void PrintPV() {
         for (int i = 0; i < pvLength[ply]; i++) {
             System.out.print(pvTable[0][i].toUCI() + (i == pvLength[ply] - 1 ? "" : " "));
+        }
+    }
+
+    public void ScoreMoves(ArrayList<Move> moves) {
+        for (var move : moves) {
+            // TODO
         }
     }
 
