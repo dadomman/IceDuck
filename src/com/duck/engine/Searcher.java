@@ -34,49 +34,9 @@ public class Searcher {
 
     // Root Search Function
     public int NegamaxRoot(Board board, int depth) {
-        pvLength[ply] = 0;
-
-        int alpha = -MateValue;
-        int beta = MateValue;
-
         ply = 0;
 
-        if (depth == 0) {
-            return Quiescence(board, alpha, beta);
-        }
-        var moves = board.genLegalMoves();
-        int bestValue = -MateValue;
-
-        // Loop through all moves
-        for (var i = 0; i < moves.size(); i++) {
-            Move m = moves.get(i);
-            if (!board.makeMove(m)) continue;
-            ply++;
-            int value = -Negamax(board, depth - 1, -beta, -alpha);
-            // System.out.println(m + ":  " + value);
-            ply--;
-            board.unmakeMove();
-
-            if (value > bestValue) {
-                // Better move
-                bestValue = value;
-                bestMove = m;
-
-                if (bestValue > alpha) {
-                    alpha = bestValue;
-
-                    pvTable[ply][0] = m;
-                    System.arraycopy(pvTable[ply + 1], 0, pvTable[ply], 1, pvLength[ply + 1]);
-                    pvLength[ply] = pvLength[ply + 1] + 1;
-
-                    if (alpha >= beta) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return bestValue;
+        return Negamax(board, depth, -MateValue, MateValue);
     }
 
     // Quiescence Search Function
@@ -113,11 +73,11 @@ public class Searcher {
 
     // Recursive Negamax Search Function
     public int Negamax(Board board, int depth, int alpha, int beta) {
-        pvLength[ply] = 0;
-
         if (ply >= MaxDepth) {
             return HCE.evaluateForSTM(board);
         }
+
+        pvLength[ply] = 0;
 
         // Mate-Distance Pruning
         {
@@ -143,11 +103,15 @@ public class Searcher {
         // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
             var m = moves.get(i);
+
             if (!board.makeMove(m)) continue;
             ply++;
             movesMade++;
             // Get score from next Ply
             int score = -Negamax(board, depth - 1, -beta, -alpha);
+            if (ply == 0) {
+                System.out.println(m.toUCI() + ": " + score);
+            }
             ply--;
             board.unmakeMove();
 
@@ -156,6 +120,9 @@ public class Searcher {
 
                 if (value > alpha) {
                     alpha = value;
+                    if (ply == 0) {
+                        bestMove = m;
+                    }
 
                     // Update Principal Variation
                     pvTable[ply][0] = m;

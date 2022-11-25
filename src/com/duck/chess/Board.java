@@ -28,8 +28,7 @@ public class Board {
     // Castle rights, four bits KQkq
     public int castle_rights = 0b1111;
     // En Passant square
-    // Since EP square can never be 0 (must be on 3rd or 6th rank), we use 0 for NO_EP
-    public int ep = 0;
+    public int ep = -1;
     // Integer representing the move number
     public int fifty = 1;
     // Move Stack for undoing moves
@@ -165,7 +164,7 @@ public class Board {
         side_to_move = COLOR_OPPONENT[side_to_move];
 
         if (move.isCapture() && captured != 0) {
-            moveStack.get(moveStack.size() - 1).capturedPiece = captured;
+            moveStack.peek().capturedPiece = captured;
             removePiece(captured, target);
             fifty = 0;
         } else if (pieceTypeOfPiece(piece) == PIECE_TYPE_PAWN) {
@@ -181,7 +180,7 @@ public class Board {
         }
 
         // Reset ep
-        ep = 0;
+        ep = -1;
 
         if (piece == PIECE_WHITE_KING) {
             kingLocations[0] = target;

@@ -12,6 +12,7 @@ public class Main {
         var searcher = new Searcher();
 
         for (int depth = 1; depth <= 5; depth++) {
+            searcher.ClearSearch();
             System.out.println("Depth: " + depth);
             System.out.println(searcher.NegamaxRoot(board, depth));
             System.out.println(searcher.bestMove.toUCI());
