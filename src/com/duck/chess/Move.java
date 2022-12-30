@@ -2,6 +2,9 @@ package com.duck.chess;
 
 import static com.duck.chess.Constants.PIECE_TO_CHAR;
 import static com.duck.chess.Constants.SQUARE_TO_STRING;
+import static com.duck.chess.Constants.pieceTypeOfPiece;
+
+import java.util.ArrayList;
 
 public class Move {
     // Private for now because we might want to do encoding in the future.
@@ -99,5 +102,50 @@ public class Move {
 
     public void setCastle(boolean castle) {
         isCastle = castle;
+    }
+    //Partition
+    public int partition(float [] a, ArrayList<Move> b, int low, int high ) {
+    	float pivot = a[high];
+    	int i = low - 1;
+    	for (int j = low; j <= high-1; j++) {
+    		if (a[j] < pivot) {
+    			i++;
+    			float t = a[i];  
+    	        a[i] = a[j];  
+    	        a[j] = t; 
+    	        Move v = b.get(i);  
+    	        b.set(i, b.get(j));  
+    	        b.set(j, v);
+    		}
+    	}
+    	 float t = a[i+1];  
+    	 a[i+1] = a[high];  
+    	 a[high] = t;
+    	 Move v = b.get(i+1);  
+    	 b.set(i+1, b.get(high));  
+    	 b.set(high, v);
+    	 return (i+1);
+    }
+    //Quicksort
+    void Quicksort(float [] a, ArrayList<Move> b, int low, int high ) {
+    	if (low < high) {
+    		int p = partition(a, b, low, high);
+    		Quicksort(a, b, low, p - 1);  
+            Quicksort(a, b, p + 1, high);
+    	}
+    }
+    //Move Ordering MVV-LVA
+    public ArrayList<Move> MVVLVA(){
+    	Board board2 = new Board();
+    	ArrayList<Move> Capturemoves = board2.genCaptureMoves();
+    	//New Array for ratios in order, any swap also swaps Capturemoves
+    	float [] Ratiolist = new float[Capturemoves.size()];
+    	for (int i = 0; i < Capturemoves.size(); i++) {
+    		float ratio = Capturemoves.get(i).target / Capturemoves.get(i).source;
+    		Ratiolist[i] = ratio;
+    	}
+    	//Quicksort enacted on Ratiolist
+    	Quicksort(Ratiolist, Capturemoves, 0, Capturemoves.size());
+    	return Capturemoves;
     }
 }
