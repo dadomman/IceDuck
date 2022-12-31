@@ -6,6 +6,8 @@ import static com.duck.chess.Constants.pieceTypeOfPiece;
 
 import java.util.ArrayList;
 
+import com.duck.engine.HCE;
+
 public class Move {
     // Private for now because we might want to do encoding in the future.
     private int source;
@@ -137,11 +139,12 @@ public class Move {
     //Move Ordering MVV-LVA
     public ArrayList<Move> MVVLVA(){
     	Board board2 = new Board();
+    	HCE HCE2 = new HCE();
     	ArrayList<Move> Capturemoves = board2.genCaptureMoves();
     	//New Array for ratios in order, any swap also swaps Capturemoves
     	float [] Ratiolist = new float[Capturemoves.size()];
     	for (int i = 0; i < Capturemoves.size(); i++) {
-    		float ratio = Capturemoves.get(i).target / Capturemoves.get(i).source;
+    		float ratio = HCE2.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE2.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
     		Ratiolist[i] = ratio;
     	}
     	//Quicksort enacted on Ratiolist
