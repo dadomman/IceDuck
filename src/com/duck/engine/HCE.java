@@ -7,7 +7,7 @@ public class HCE {
     // Material Weights
     // Note: King probably won't matter because both kings always cancel out.
     public static int[] Weights = new int[]{
-            95, 330, 355, 480, 980, 0,
+            95, 330, 355, 480, 980, 4000,
     };
 
     // The Piece-Square Table

@@ -139,12 +139,11 @@ public class Move {
     //Move Ordering MVV-LVA
     public ArrayList<Move> MVVLVA(){
     	Board board2 = new Board();
-    	HCE HCE2 = new HCE();
     	ArrayList<Move> Capturemoves = board2.genCaptureMoves();
     	//New Array for ratios in order, any swap also swaps Capturemoves
     	float [] Ratiolist = new float[Capturemoves.size()];
     	for (int i = 0; i < Capturemoves.size(); i++) {
-    		float ratio = HCE2.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE2.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
+    		float ratio = HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
     		Ratiolist[i] = ratio;
     	}
     	//Quicksort enacted on Ratiolist
