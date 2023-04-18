@@ -11,8 +11,9 @@ import com.duck.engine.Searcher;
 
 public class Move {
     // Private for now because we might want to do encoding in the future.
-    private int source;
-    private int target;
+	//Made source & target public so that they can be accessed by searcher
+    public int source;
+    public int target;
     private int piece;
     private boolean isDoublePush;
     private boolean isCapture;
