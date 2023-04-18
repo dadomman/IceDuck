@@ -33,10 +33,17 @@ public class Searcher {
             System.out.print(pvTable[0][i].toUCI() + (i == pvLength[ply] - 1 ? "" : " "));
         }
     }
-
+    float [] Ratiolist = new float[0];
+    int i = 0;
+    //Scores our moves to be sorted to save time
     public void ScoreMoves(ArrayList<Move> moves) {
         for (var move : moves) {
             // TODO
+        	i++;
+        	if(move.isCapture()) {
+        		float ratio = HCE.Weights[Constants.pieceTypeOfPiece(move.source)] / HCE.Weights[Constants.pieceTypeOfPiece(move.target)];
+        		Ratiolist[i] = ratio;
+        	}
         }
     }
 
@@ -107,6 +114,8 @@ public class Searcher {
         int value = -MateValue;
 
         var movesMade = 0;
+        
+        
 
         // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
