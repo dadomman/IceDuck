@@ -130,27 +130,4 @@ public class Move {
     	 b.set(high, v);
     	 return (i+1);
     }
-    //Quicksort
-    void Quicksort(float [] a, ArrayList<Move> b, int low, int high ) {
-    	if (low < high) {
-    		int p = partition(a, b, low, high);
-    		Quicksort(a, b, low, p - 1);  
-            Quicksort(a, b, p + 1, high);
-    	}
-    }
-    //Declare new list of moves listed based on scores, change MVVLVA based on new version
-    Board board2 = new Board();
-    //Move Ordering MVV-LVA
-    public ArrayList<Move> MVVLVA(){
-    	ArrayList<Move> Capturemoves = board2.genCaptureMoves();
-    	//New Array for ratios in order, any swap also swaps Capturemoves
-    	float [] Ratiolist = new float[Capturemoves.size()];
-    	for (int i = 0; i < Capturemoves.size(); i++) {
-    		float ratio = HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
-    		Ratiolist[i] = ratio;
-    	}
-    	//Quicksort enacted on Ratiolist
-    	Quicksort(Ratiolist, Capturemoves, 0, Capturemoves.size());
-    	return Capturemoves;
-    }
 }
