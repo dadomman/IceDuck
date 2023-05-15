@@ -1,19 +1,16 @@
 package com.duck.chess;
 
-import static com.duck.chess.Constants.PIECE_TO_CHAR;
-import static com.duck.chess.Constants.SQUARE_TO_STRING;
-import static com.duck.chess.Constants.pieceTypeOfPiece;
-
 import java.util.ArrayList;
 
-import com.duck.engine.HCE;
-import com.duck.engine.Searcher;
+import static com.duck.chess.Constants.PIECE_TO_CHAR;
+import static com.duck.chess.Constants.SQUARE_TO_STRING;
 
 public class Move {
     // Private for now because we might want to do encoding in the future.
-	//Made source & target public so that they can be accessed by searcher
+    //Made source & target public so that they can be accessed by searcher
     public int source;
     public int target;
+    public int score = 0;
     private int piece;
     private boolean isDoublePush;
     private boolean isCapture;
@@ -21,8 +18,6 @@ public class Move {
     // 0 if not promotion
     private int promotionPiece;
     private boolean isCastle;
-
-    public int score = 0;
 
     public Move(int source, int target, int piece, boolean isDoublePush, boolean isCapture, boolean isEnPassant, int promotionPiece, boolean isCastle) {
         this.source = source;
@@ -107,27 +102,28 @@ public class Move {
     public void setCastle(boolean castle) {
         isCastle = castle;
     }
+
     //Partition
-    public int partition(float [] a, ArrayList<Move> b, int low, int high ) {
-    	float pivot = a[high];
-    	int i = low - 1;
-    	for (int j = low; j <= high-1; j++) {
-    		if (a[j] < pivot) {
-    			i++;
-    			float t = a[i];  
-    	        a[i] = a[j];  
-    	        a[j] = t; 
-    	        Move v = b.get(i);  
-    	        b.set(i, b.get(j));  
-    	        b.set(j, v);
-    		}
-    	}
-    	 float t = a[i+1];  
-    	 a[i+1] = a[high];  
-    	 a[high] = t;
-    	 Move v = b.get(i+1);  
-    	 b.set(i+1, b.get(high));  
-    	 b.set(high, v);
-    	 return (i+1);
+    public int partition(float[] a, ArrayList<Move> b, int low, int high) {
+        float pivot = a[high];
+        int i = low - 1;
+        for (int j = low; j <= high - 1; j++) {
+            if (a[j] < pivot) {
+                i++;
+                float t = a[i];
+                a[i] = a[j];
+                a[j] = t;
+                Move v = b.get(i);
+                b.set(i, b.get(j));
+                b.set(j, v);
+            }
+        }
+        float t = a[i + 1];
+        a[i + 1] = a[high];
+        a[high] = t;
+        Move v = b.get(i + 1);
+        b.set(i + 1, b.get(high));
+        b.set(high, v);
+        return (i + 1);
     }
 }

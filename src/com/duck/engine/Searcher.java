@@ -33,17 +33,17 @@ public class Searcher {
             System.out.print(pvTable[0][i].toUCI() + (i == pvLength[ply] - 1 ? "" : " "));
         }
     }
-    float [] Ratiolist = new float[0];
-    int i = 0;
+
+    public static final int CAPTURE_SCORE = 100_000;
+
     //Scores our moves to be sorted to save time
     public void ScoreMoves(ArrayList<Move> moves) {
         for (var move : moves) {
             // TODO
-        	i++;
-        	if(move.isCapture()) {
-        		float ratio = HCE.Weights[Constants.pieceTypeOfPiece(move.source)] / HCE.Weights[Constants.pieceTypeOfPiece(move.target)];
-        		Ratiolist[i] = ratio;
-        	}
+            if (move.isCapture()) {
+                float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(move.target)] / HCE.Weights[Constants.pieceTypeOfPiece(move.source)];
+                move.score = CAPTURE_SCORE + (int) (ratio * 100);  // turn it into an integer
+            }
         }
     }
 
@@ -114,8 +114,7 @@ public class Searcher {
         int value = -MateValue;
 
         var movesMade = 0;
-        
-        
+
 
         // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
@@ -153,8 +152,6 @@ public class Searcher {
                 }
             }
         }
-        
-
 
 
         // Checkmate or Stalemate
@@ -168,50 +165,54 @@ public class Searcher {
 
         return value;
     }
+
     //Partition
-    public int partition(float [] a, ArrayList<Move> b, int low, int high ) {
-    	float pivot = a[high];
-    	int i = low - 1;
-    	for (int j = low; j <= high-1; j++) {
-    		if (a[j] < pivot) {
-    			i++;
-    			float t = a[i];  
-    	        a[i] = a[j];  
-    	        a[j] = t; 
-    	        Move v = b.get(i);  
-    	        b.set(i, b.get(j));  
-    	        b.set(j, v);
-    		}
-    	}
-    	 float t = a[i+1];  
-    	 a[i+1] = a[high];  
-    	 a[high] = t;
-    	 Move v = b.get(i+1);  
-    	 b.set(i+1, b.get(high));  
-    	 b.set(high, v);
-    	 return (i+1);
+    public int partition(float[] a, ArrayList<Move> b, int low, int high) {
+        float pivot = a[high];
+        int i = low - 1;
+        for (int j = low; j <= high - 1; j++) {
+            if (a[j] < pivot) {
+                i++;
+                float t = a[i];
+                a[i] = a[j];
+                a[j] = t;
+                Move v = b.get(i);
+                b.set(i, b.get(j));
+                b.set(j, v);
+            }
+        }
+        float t = a[i + 1];
+        a[i + 1] = a[high];
+        a[high] = t;
+        Move v = b.get(i + 1);
+        b.set(i + 1, b.get(high));
+        b.set(high, v);
+        return (i + 1);
     }
+
     //Quicksort, factor into NegaMax later
-    void Quicksort(float [] a, ArrayList<Move> b, int low, int high ) {
-    	if (low < high) {
-    		int p = partition(a, b, low, high);
-    		Quicksort(a, b, low, p - 1);  
+    void Quicksort(float[] a, ArrayList<Move> b, int low, int high) {
+        if (low < high) {
+            int p = partition(a, b, low, high);
+            Quicksort(a, b, low, p - 1);
             Quicksort(a, b, p + 1, high);
-    	}
+        }
     }
+
     //Declare new list of moves listed based on scores, change MVVLVA based on new version
     Board board2 = new Board();
+
     //Move Ordering MVV-LVA
-    public ArrayList<Move> MVVLVA(){
-    	ArrayList<Move> Capturemoves = board2.genCaptureMoves();
-    	//New Array for ratios in order, any swap also swaps Capturemoves
-    	float [] Ratiolist = new float[Capturemoves.size()];
-    	for (int i = 0; i < Capturemoves.size(); i++) {
-    		float ratio = HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
-    		Ratiolist[i] = ratio;
-    	}
-    	//Quicksort enacted on Ratiolist
-    	Quicksort(Ratiolist, Capturemoves, 0, Capturemoves.size());
-    	return Capturemoves;
+    public ArrayList<Move> MVVLVA() {
+        ArrayList<Move> Capturemoves = board2.genCaptureMoves();
+        //New Array for ratios in order, any swap also swaps Capturemoves
+        float[] Ratiolist = new float[Capturemoves.size()];
+        for (int i = 0; i < Capturemoves.size(); i++) {
+            float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
+            Ratiolist[i] = ratio;
+        }
+        //Quicksort enacted on Ratiolist
+        Quicksort(Ratiolist, Capturemoves, 0, Capturemoves.size());
+        return Capturemoves;
     }
 }
