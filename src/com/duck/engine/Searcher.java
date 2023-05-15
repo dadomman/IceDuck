@@ -37,12 +37,16 @@ public class Searcher {
     public static final int CAPTURE_SCORE = 100_000;
 
     //Scores our moves to be sorted to save time
-    public void ScoreMoves(ArrayList<Move> moves) {
+    public void ScoreMoves(ArrayList<Move> moves, Board board) {
         for (var move : moves) {
             // TODO
             if (move.isCapture()) {
-                float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(move.target)] / HCE.Weights[Constants.pieceTypeOfPiece(move.source)];
-                move.score = CAPTURE_SCORE + (int) (ratio * 100);  // turn it into an integer
+                if (move.isEnPassant()) {  // special case
+                    move.score = CAPTURE_SCORE + 100;
+                } else {
+                    float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(board.board[move.target])] / HCE.Weights[Constants.pieceTypeOfPiece(board.board[move.source])];
+                    move.score = CAPTURE_SCORE + (int) (ratio * 100);  // turn it into an integer
+                }
             }
         }
     }
@@ -167,23 +171,17 @@ public class Searcher {
     }
 
     //Partition
-    public int partition(float[] a, ArrayList<Move> b, int low, int high) {
-        float pivot = a[high];
+    public int partition(ArrayList<Move> b, int low, int high) {
+        int pivot = b.get(high).score;
         int i = low - 1;
         for (int j = low; j <= high - 1; j++) {
-            if (a[j] < pivot) {
+            if (b.get(j).score < pivot) {
                 i++;
-                float t = a[i];
-                a[i] = a[j];
-                a[j] = t;
                 Move v = b.get(i);
                 b.set(i, b.get(j));
                 b.set(j, v);
             }
         }
-        float t = a[i + 1];
-        a[i + 1] = a[high];
-        a[high] = t;
         Move v = b.get(i + 1);
         b.set(i + 1, b.get(high));
         b.set(high, v);
@@ -191,28 +189,29 @@ public class Searcher {
     }
 
     //Quicksort, factor into NegaMax later
-    void Quicksort(float[] a, ArrayList<Move> b, int low, int high) {
+    public void Quicksort(ArrayList<Move> b, int low, int high) {
         if (low < high) {
-            int p = partition(a, b, low, high);
-            Quicksort(a, b, low, p - 1);
-            Quicksort(a, b, p + 1, high);
+            int p = partition(b, low, high);
+            Quicksort(b, low, p - 1);
+            Quicksort(b, p + 1, high);
         }
     }
 
-    //Declare new list of moves listed based on scores, change MVVLVA based on new version
-    Board board2 = new Board();
-
-    //Move Ordering MVV-LVA
-    public ArrayList<Move> MVVLVA() {
-        ArrayList<Move> Capturemoves = board2.genCaptureMoves();
-        //New Array for ratios in order, any swap also swaps Capturemoves
-        float[] Ratiolist = new float[Capturemoves.size()];
-        for (int i = 0; i < Capturemoves.size(); i++) {
-            float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
-            Ratiolist[i] = ratio;
-        }
-        //Quicksort enacted on Ratiolist
-        Quicksort(Ratiolist, Capturemoves, 0, Capturemoves.size());
-        return Capturemoves;
-    }
+    // Implemented somewhere else
+//    //Declare new list of moves listed based on scores, change MVVLVA based on new version
+//    Board board2 = new Board();
+//
+//    //Move Ordering MVV-LVA
+//    public ArrayList<Move> MVVLVA() {
+//        ArrayList<Move> Capturemoves = board2.genCaptureMoves();
+//        //New Array for ratios in order, any swap also swaps Capturemoves
+//        float[] Ratiolist = new float[Capturemoves.size()];
+//        for (int i = 0; i < Capturemoves.size(); i++) {
+//            float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).source)] / HCE.Weights[Constants.pieceTypeOfPiece(Capturemoves.get(i).target)];
+//            Ratiolist[i] = ratio;
+//        }
+//        //Quicksort enacted on Ratiolist
+//        Quicksort(Capturemoves, 0, Capturemoves.size());
+//        return Capturemoves;
+//    }
 }
