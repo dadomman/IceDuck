@@ -16,6 +16,8 @@ public class Searcher {
 
     public Move[][] pvTable = new Move[MaxDepth][MaxDepth];
     public int[] pvLength = new int[MaxDepth];
+    //Add KillerArray to store at most 2 "Killer Moves"
+    public Move[][] KillerArray = new Move[MaxDepth][2];
 
     // Clears PV table
     public void ClearSearch() {
@@ -151,6 +153,11 @@ public class Searcher {
 
                     // Alpha-Beta Pruning
                     if (alpha >= beta) {
+                    	//Killer Move Update-implementation
+                    	if(!(m.isCapture())) {
+                    		KillerArray[ply][1] = KillerArray[ply][0];
+                    		KillerArray[ply][0] = m;
+                    	}
                         break;
                     }
                 }
