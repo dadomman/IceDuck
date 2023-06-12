@@ -18,8 +18,9 @@ public class Move {
     // 0 if not promotion
     private int promotionPiece;
     private boolean isCastle;
+    private boolean isQuiet;
 
-    public Move(int source, int target, int piece, boolean isDoublePush, boolean isCapture, boolean isEnPassant, int promotionPiece, boolean isCastle) {
+    public Move(int source, int target, int piece, boolean isDoublePush, boolean isCapture, boolean isEnPassant, int promotionPiece, boolean isCastle, boolean isQuiet) {
         this.source = source;
         this.target = target;
         this.piece = piece;
@@ -28,6 +29,7 @@ public class Move {
         this.isEnPassant = isEnPassant;
         this.promotionPiece = promotionPiece;
         this.isCastle = isCastle;
+        this.isQuiet = isQuiet;
     }
 
     @Override
@@ -101,6 +103,9 @@ public class Move {
 
     public void setCastle(boolean castle) {
         isCastle = castle;
+    }
+    public boolean isQuiet() {
+    	return isQuiet;
     }
 
     //Partition

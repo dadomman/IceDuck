@@ -319,7 +319,7 @@ public class Board {
                         moves.add(new Move(
                                 i, i + NORTH, piece,
                                 false, false, false,
-                                promote_piece, false)
+                                promote_piece, false, true)
                         );
                     }
                 } else {
@@ -327,7 +327,7 @@ public class Board {
                     moves.add(new Move(
                             i, i + NORTH, piece,
                             false, false, false,
-                            0, false)
+                            0, false, true)
                     );
 
                     if (squareRank(i) == 1 && board[i + NORTH + NORTH] == 0) {
@@ -335,7 +335,7 @@ public class Board {
                         moves.add(new Move(
                                 i, i + NORTH + NORTH, piece,
                                 true, false, false,
-                                0, false)
+                                0, false, true)
                         );
                     }
                 }
@@ -347,7 +347,7 @@ public class Board {
                         moves.add(new Move(
                                 i, i + SOUTH, piece,
                                 false, false, false,
-                                promote_piece, false)
+                                promote_piece, false, true)
                         );
                     }
                 } else {
@@ -355,7 +355,7 @@ public class Board {
                     moves.add(new Move(
                             i, i + SOUTH, piece,
                             false, false, false,
-                            0, false)
+                            0, false, true)
                     );
 
                     if (squareRank(i) == 6 && board[i + SOUTH + SOUTH] == 0) {
@@ -363,7 +363,7 @@ public class Board {
                         moves.add(new Move(
                                 i, i + SOUTH + SOUTH, piece,
                                 true, false, false,
-                                0, false)
+                                0, false, true)
                         );
                     }
                 }
@@ -381,7 +381,7 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquareLeft, piece,
                             false, true, true,
-                            0, false));
+                            0, false, true));
                 } else if (board[targetSquareLeft] != 0
                         && colorOfPiece(board[targetSquareLeft]) == COLOR_BLACK) {
                     if (squareRank(i) == 6) {
@@ -389,14 +389,14 @@ public class Board {
                             moves.add(new Move(
                                     i, targetSquareLeft, piece,
                                     false, true, false,
-                                    promote_piece, false)
+                                    promote_piece, false, true)
                             );
                         }
                     } else {
                         moves.add(new Move(
                                 i, targetSquareLeft, piece,
                                 false, true, false,
-                                0, false));
+                                0, false, true));
                     }
                 }
             }
@@ -405,7 +405,7 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquareRight, piece,
                             false, true, true,
-                            0, false));
+                            0, false, true));
                 } else if (board[targetSquareRight] != 0
                         && colorOfPiece(board[targetSquareRight]) == COLOR_BLACK) {
                     if (squareRank(i) == 6) {
@@ -413,14 +413,14 @@ public class Board {
                             moves.add(new Move(
                                     i, targetSquareRight, piece,
                                     false, true, false,
-                                    promote_piece, false)
+                                    promote_piece, false, true)
                             );
                         }
                     } else {
                         moves.add(new Move(
                                 i, targetSquareRight, piece,
                                 false, true, false,
-                                0, false));
+                                0, false, true));
                     }
                 }
             }
@@ -432,7 +432,7 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquareLeft, piece,
                             false, true, true,
-                            0, false));
+                            0, false, true));
                 } else if (board[targetSquareLeft] != 0
                         && colorOfPiece(board[targetSquareLeft]) == COLOR_WHITE) {
                     if (squareRank(i) == 1) {
@@ -440,14 +440,14 @@ public class Board {
                             moves.add(new Move(
                                     i, targetSquareLeft, piece,
                                     false, true, false,
-                                    promote_piece, false)
+                                    promote_piece, false, true)
                             );
                         }
                     } else {
                         moves.add(new Move(
                                 i, targetSquareLeft, piece,
                                 false, true, false,
-                                0, false));
+                                0, false, true));
                     }
                 }
             }
@@ -456,7 +456,7 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquareRight, piece,
                             false, true, true,
-                            0, false));
+                            0, false, true));
                 } else if (board[targetSquareRight] != 0
                         && colorOfPiece(board[targetSquareRight]) == COLOR_WHITE) {
                     if (squareRank(i) == 1) {
@@ -464,14 +464,14 @@ public class Board {
                             moves.add(new Move(
                                     i, targetSquareRight, piece,
                                     false, true, false,
-                                    promote_piece, false)
+                                    promote_piece, false, true)
                             );
                         }
                     } else {
                         moves.add(new Move(
                                 i, targetSquareRight, piece,
                                 false, true, false,
-                                0, false));
+                                0, false, true));
                     }
                 }
             }
@@ -489,13 +489,13 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquare, board[i],
                             false, false, false,
-                            0, false));
+                            0, false,true));
                 } else {
                     if (colorOfPiece(board[targetSquare]) != side_to_move) {
                         moves.add(new Move(
                                 i, targetSquare, board[i],
                                 false, true, false,
-                                0, false));
+                                0, false, true));
                     }
                     break;
                 }
@@ -515,12 +515,12 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquare, board[i],
                             false, false, false,
-                            0, false));
+                            0, false, true));
                 } else if (colorOfPiece(board[targetSquare]) != side_to_move) {
                     moves.add(new Move(
                             i, targetSquare, board[i],
                             false, true, false,
-                            0, false));
+                            0, false, true));
                 }
             }
         }
@@ -555,7 +555,7 @@ public class Board {
                                     moves.add(new Move(
                                             ks, ks + EAST + EAST, board[i],
                                             false, false, false,
-                                            0, true));
+                                            0, true, true));
                                 }
                             }
                         }
@@ -567,7 +567,7 @@ public class Board {
                                     moves.add(new Move(
                                             ks, ks + WEST + WEST, board[i],
                                             false, false, false,
-                                            0, true));
+                                            0, true, true));
                                 }
                             }
                         }
@@ -579,7 +579,7 @@ public class Board {
                                     moves.add(new Move(
                                             ks, ks + EAST + EAST, board[i],
                                             false, false, false,
-                                            0, true));
+                                            0, true, true));
                                 }
                             }
                         }
@@ -591,7 +591,7 @@ public class Board {
                                     moves.add(new Move(
                                             ks, ks + WEST + WEST, board[i],
                                             false, false, false,
-                                            0, true));
+                                            0, true, true));
                                 }
                             }
                         }
@@ -614,7 +614,7 @@ public class Board {
                         moves.add(new Move(
                                 i, targetSquare, board[i],
                                 false, true, false,
-                                0, false));
+                                0, false, false));
                     }
                     break;
                 }
@@ -635,7 +635,7 @@ public class Board {
                         moves.add(new Move(
                                 i, targetSquare, board[i],
                                 false, true, false,
-                                0, false));
+                                0, false, false));
                     }
                 }
             }

@@ -18,6 +18,7 @@ public class Searcher {
     public int[] pvLength = new int[MaxDepth];
     //Add KillerArray to store at most 2 "Killer Moves"
     public Move[][] KillerArray = new Move[MaxDepth][2];
+   public int[][] HistoryArray = new int[64][64];
 
     // Clears PV table
     public void ClearSearch() {
@@ -157,6 +158,10 @@ public class Searcher {
                     	if(!(m.isCapture())) {
                     		KillerArray[ply][1] = KillerArray[ply][0];
                     		KillerArray[ply][0] = m;
+                    	}
+                    	//History Heuristic, Find isQuiet Method or create it
+                    	if (m.isQuiet()) {
+                    		HistoryArray[m.getSource()][m.getTarget()] += depth*depth;
                     	}
                         break;
                     }
