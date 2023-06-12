@@ -319,7 +319,7 @@ public class Board {
                         moves.add(new Move(
                                 i, i + NORTH, piece,
                                 false, false, false,
-                                promote_piece, false, true)
+                                promote_piece, false, false)
                         );
                     }
                 } else {
