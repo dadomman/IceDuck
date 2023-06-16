@@ -33,6 +33,14 @@ public class Board {
     public int fifty = 1;
     // Move Stack for undoing moves
     public Stack<History> moveStack = new Stack<>();
+    // Four booleans if castling is legal or not
+    public boolean wCastleQ = true;
+    public boolean wCastleK = true;
+    public boolean bCastleQ = true;
+    public boolean bCastleK = true;
+    //Move Counters for half/fullmove counters
+    public int halfmove_cnt = 0;
+    public int fullmove_cnt = 0; 
 
     // Empty board
     public Board() {
@@ -99,6 +107,53 @@ public class Board {
                 case 'q' -> castle_rights |= Constants.CASTLE_BLACK_Q;
             }
         }
+    }
+    //Generates FEN based on the board
+    public String getFEN () {
+    	int Empty_Cnt = 0;
+    	String FEN = "";
+    	for (int i = 7; i >= 0; i--) {
+    		for(int j = 0; i < 8; i++) {
+    			 if(board[(i)*16 + j] != 0) {
+    	            	if (Empty_Cnt != 0 && board[(i)*16 + j+1] != 0) {
+    	            		char emptyNo = (char)Empty_Cnt;
+    	            		FEN += emptyNo;
+    	            		Empty_Cnt = 0;
+    	            	}
+    	            	FEN += Constants.pieceTypeOfPiece(board[(i)*16 + j]);
+    	            	if(board[(i)*16 + j+1] == 0) {
+    	            		char rank = (char)(i+1);
+    	            		FEN += rank;
+    	            	}
+    	            }
+    			 else {
+    				 Empty_Cnt += 1;
+    	            }
+    			 if (j == 7 && i != 0) {
+    				 FEN += '/';
+    			 }
+    		} 
+    	}
+    	if (side_to_move == 0) {
+    		FEN += " w ";
+    	}
+    	else {
+    		FEN += " b ";
+    	}
+    	if (wCastleK) {
+    		FEN +="K";
+    	}
+    	if (wCastleQ) {
+    		FEN +="Q";
+    	}
+    	if (bCastleK) {
+    		FEN +="k";
+    	}
+    	if (bCastleQ) {
+    		FEN +="q";
+    	}
+    	FEN = FEN + " - " + Integer.toString(halfmove_cnt) + " " + Integer.toString(fullmove_cnt);
+    	return FEN;
     }
 
     // Prettily print the board
