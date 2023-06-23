@@ -5,20 +5,21 @@ import com.duck.chess.Constants;
 import com.duck.chess.Move;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 // Searcher Class
 public class Searcher {
     public static int MateValue = 999999;
     public static int MaxDepth = 256;
-
     public Move bestMove = null;
-    public int ply = 0;
-
+    public int ply = 0; 
     public Move[][] pvTable = new Move[MaxDepth][MaxDepth];
     public int[] pvLength = new int[MaxDepth];
     //Add KillerArray to store at most 2 "Killer Moves"
     public Move[][] KillerArray = new Move[MaxDepth][2];
-   public int[][] HistoryArray = new int[64][64];
+    public int[][] HistoryArray = new int[64][64];
+    //Uses HashMap class to create new table
+    HashMap<String, Integer> transpositionTable = new HashMap<String, Integer>();
 
     // Clears PV table
     public void ClearSearch() {
@@ -166,6 +167,8 @@ public class Searcher {
                         break;
                     }
                 }
+              //Store position in transpositionTable
+                transpositionTable.put(board.getFEN(), score);
             }
         }
 
@@ -178,9 +181,9 @@ public class Searcher {
                 return 0;
             }
         }
-
         return value;
     }
+    
 
     //Partition
     public int partition(ArrayList<Move> b, int low, int high) {

@@ -152,7 +152,6 @@ public class Board {
     	if (bCastleQ) {
     		FEN +="q";
     	}
-    	FEN = FEN + " - " + Integer.toString(halfmove_cnt) + " " + Integer.toString(fullmove_cnt);
     	return FEN;
     }
 
