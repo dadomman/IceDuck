@@ -1,7 +1,6 @@
 package com.duck.chess;
 
 import java.util.ArrayList;
-
 import static com.duck.chess.Constants.PIECE_TO_CHAR;
 import static com.duck.chess.Constants.SQUARE_TO_STRING;
 

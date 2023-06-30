@@ -41,6 +41,7 @@ public class Board {
     //Move Counters for half/fullmove counters
     public int halfmove_cnt = 0;
     public int fullmove_cnt = 0; 
+    public String EnPassantSquare = "";
 
     // Empty board
     public Board() {
@@ -152,6 +153,13 @@ public class Board {
     	if (bCastleQ) {
     		FEN +="q";
     	}
+    	
+    	if (EnPassantSquare != "") {
+    		FEN += EnPassantSquare;
+    	}
+    	else
+    		FEN += " - ";
+    	
     	return FEN;
     }
 
@@ -238,8 +246,26 @@ public class Board {
 
         if (piece == PIECE_WHITE_KING) {
             kingLocations[0] = target;
-        } else if (piece == PIECE_BLACK_KING) {
+            //Updates castle rights for white
+            wCastleK = false;
+            wCastleQ = false;
+        } 
+        else if (piece == PIECE_BLACK_KING) {
             kingLocations[1] = target;
+            //Updates castle rights for black
+            bCastleK = false;
+            bCastleQ = false;
+        }
+        
+        //Update En Passant
+        if (move.isDoublePush() && side_to_move == 0) {
+        	EnPassantSquare = SQUARE_TO_STRING[source - 16] ; 
+        }
+        else if (move.isDoublePush() && side_to_move == 1) {
+        	EnPassantSquare = SQUARE_TO_STRING[source - 16]; 
+        }
+        else {
+        	EnPassantSquare = "";
         }
 
         switch (source) {
@@ -279,6 +305,15 @@ public class Board {
                     addPiece(PIECE_BLACK_ROOK, D8);
                 }
             }
+            //Updates Castle Booleans for FEN
+            if (side_to_move == 1) {
+            	bCastleK = false;
+            	bCastleQ = false;
+            }
+            else {
+            	wCastleK = false;
+            	wCastleQ = false;
+            }
         }
 
         if (pieceTypeOfPiece(piece) == PIECE_TYPE_PAWN) {
@@ -291,6 +326,7 @@ public class Board {
             } else {
                 removePiece(PIECE_WHITE_PAWN, target + NORTH);
             }
+            
         }
 
         if (isSquareAttacked(kingLocations[COLOR_OPPONENT[side_to_move]], side_to_move)) {
