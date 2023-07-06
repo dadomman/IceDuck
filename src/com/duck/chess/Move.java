@@ -18,6 +18,7 @@ public class Move {
     private int promotionPiece;
     private boolean isCastle;
     private boolean isQuiet;
+    
 
     public Move(int source, int target, int piece, boolean isDoublePush, boolean isCapture, boolean isEnPassant, int promotionPiece, boolean isCastle, boolean isQuiet) {
         this.source = source;

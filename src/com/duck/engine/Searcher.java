@@ -17,14 +17,13 @@ public class Searcher {
     public int[] pvLength = new int[MaxDepth];
     //Add KillerArray to store at most 2 "Killer Moves"
     public Move[][] KillerArray = new Move[MaxDepth][2];
-    public int[][] HistoryArray = new int[64][64];
+    public int[][] HistoryArray = new int[128][128];
     //Uses HashMap class to create new table
     HashMap<String, Integer> transpositionTable = new HashMap<String, Integer>();
 
     // Clears PV table
     public void ClearSearch() {
         for (int i = 0; i < MaxDepth; i++) {
-            pvLength[i] = 0;
             for (int j = 0; j < MaxDepth; j++) {
                 pvTable[i][j] = null;
             }
@@ -43,7 +42,12 @@ public class Searcher {
     //Scores our moves to be sorted to save time
     public void ScoreMoves(ArrayList<Move> moves, Board board) {
         for (var move : moves) {
-            // TODO
+            if (move == KillerArray[ply][0]) {
+            	move.score = 20000;
+            }
+            else if (move == KillerArray[ply][1]) {
+            	move.score = 10000;
+            }
             if (move.isCapture()) {
                 if (move.isEnPassant()) {  // special case
                     move.score = CAPTURE_SCORE + 100;
@@ -51,6 +55,10 @@ public class Searcher {
                     float ratio = (float) HCE.Weights[Constants.pieceTypeOfPiece(board.board[move.target])] / HCE.Weights[Constants.pieceTypeOfPiece(board.board[move.source])];
                     move.score = CAPTURE_SCORE + (int) (ratio * 100);  // turn it into an integer
                 }
+            }
+            //History Heuristic move scores based upon depth^2
+            else {
+            	move.score = HistoryArray[move.getSource()][move.getTarget()];
             }
         }
     }
