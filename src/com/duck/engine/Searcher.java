@@ -40,7 +40,7 @@ public class Searcher {
     public static final int CAPTURE_SCORE = 100_000;
 
     //Scores our moves to be sorted to save time
-    public void ScoreMoves(ArrayList<Move> moves, Board board) {
+    public ArrayList<Move> ScoreMoves(ArrayList<Move> moves, Board board) {
         for (var move : moves) {
             if (move == KillerArray[ply][0]) {
             	move.score = 20000;
@@ -61,6 +61,7 @@ public class Searcher {
             	move.score = HistoryArray[move.getSource()][move.getTarget()];
             }
         }
+        return moves;
     }
 
     // Root Search Function
@@ -130,7 +131,9 @@ public class Searcher {
         int value = -MateValue;
 
         var movesMade = 0;
-
+        
+        //Score and Sort Moves
+        Quicksort(ScoreMoves(moves, board), 0, moves.size());
 
         // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
@@ -139,8 +142,11 @@ public class Searcher {
             if (!board.makeMove(m)) continue;
             ply++;
             movesMade++;
-            // Get score from next Ply
-            int score = -Negamax(board, depth - 1, -beta, -alpha);
+            // Introduces Reduction Variable Based upon depth and index
+            int reduction =(int)Math.floor( 0.65 * Math.log(depth) * Math.log(i) + 0.9);
+			// Get score from next Ply
+            int newDepth = Math.max(1, Math.min(depth, depth - reduction  - 1));
+            int score = -Negamax(board, newDepth, -beta, -alpha);
             if (ply == 0) {
                 System.out.println(m.toUCI() + ": " + score);
             }
