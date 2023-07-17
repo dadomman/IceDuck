@@ -86,6 +86,12 @@ public class Searcher {
             int score = -Quiescence(board, -beta, -alpha);
             ply--;
             board.unmakeMove();
+            
+            //Delta Pruning
+            int delta = 200;
+            if (score < alpha - delta) {
+            	return score;
+            }
 
             if (score > value) {
                 value = score;
@@ -101,6 +107,18 @@ public class Searcher {
         }
 
         return value;
+    }
+    
+  //Check if move is in PV Table
+    final boolean isPV(Move move) {
+    	for (int i = 0; i < pvLength.length; i++) {
+    		for (int j = 0; j < pvLength.length; j++) {
+    			if (pvTable[i][j] == move) {
+    			return true;
+    		}
+    	}
+    	}
+    	return false;
     }
 
     // Recursive Negamax Search Function
@@ -131,6 +149,7 @@ public class Searcher {
         int value = -MateValue;
 
         var movesMade = 0;
+        
         
         //Score and Sort Moves
         Quicksort(ScoreMoves(moves, board), 0, moves.size());
@@ -166,6 +185,12 @@ public class Searcher {
                     pvTable[ply][0] = m;
                     System.arraycopy(pvTable[ply + 1], 0, pvTable[ply], 1, pvLength[ply + 1]);
                     pvLength[ply] = pvLength[ply + 1] + 1;
+                    
+                    //Reverse Futility Pruning, rn 10 is our multiplier for a margin
+                    if (!isPV(m) && score - depth*10 > beta) {
+                    	return score;
+                    }
+
 
                     // Alpha-Beta Pruning
                     if (alpha >= beta) {
