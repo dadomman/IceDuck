@@ -1,6 +1,7 @@
 package com.duck.chess;
 
 import java.util.ArrayList;
+
 import static com.duck.chess.Constants.PIECE_TO_CHAR;
 import static com.duck.chess.Constants.SQUARE_TO_STRING;
 
@@ -18,7 +19,7 @@ public class Move {
     private int promotionPiece;
     private boolean isCastle;
     private boolean isQuiet;
-    
+
 
     public Move(int source, int target, int piece, boolean isDoublePush, boolean isCapture, boolean isEnPassant, int promotionPiece, boolean isCastle, boolean isQuiet) {
         this.source = source;
@@ -38,7 +39,7 @@ public class Move {
     }
 
     public String toUCI() {
-        return SQUARE_TO_STRING[source] + SQUARE_TO_STRING[target] + (promotionPiece != 0 ? PIECE_TO_CHAR[promotionPiece] : "");
+        return SQUARE_TO_STRING[source] + SQUARE_TO_STRING[target] + (promotionPiece != 0 ? PIECE_TO_CHAR[promotionPiece].toLowerCase() : "");
     }
 
     public int getSource() {
@@ -104,31 +105,8 @@ public class Move {
     public void setCastle(boolean castle) {
         isCastle = castle;
     }
-    public boolean isQuiet() {
-    	return isQuiet;
-    }
 
-    //Partition
-    public int partition(float[] a, ArrayList<Move> b, int low, int high) {
-        float pivot = a[high];
-        int i = low - 1;
-        for (int j = low; j <= high - 1; j++) {
-            if (a[j] < pivot) {
-                i++;
-                float t = a[i];
-                a[i] = a[j];
-                a[j] = t;
-                Move v = b.get(i);
-                b.set(i, b.get(j));
-                b.set(j, v);
-            }
-        }
-        float t = a[i + 1];
-        a[i + 1] = a[high];
-        a[high] = t;
-        Move v = b.get(i + 1);
-        b.set(i + 1, b.get(high));
-        b.set(high, v);
-        return (i + 1);
+    public boolean isQuiet() {
+        return isQuiet;
     }
 }

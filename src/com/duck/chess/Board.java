@@ -1,6 +1,7 @@
 package com.duck.chess;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Stack;
 
 import static com.duck.chess.Constants.*;
@@ -33,22 +34,41 @@ public class Board {
     public int fifty = 1;
     // Move Stack for undoing moves
     public Stack<History> moveStack = new Stack<>();
-    // Four booleans if castling is legal or not
-    public boolean wCastleQ = true;
-    public boolean wCastleK = true;
-    public boolean bCastleQ = true;
-    public boolean bCastleK = true;
-    //Move Counters for half/fullmove counters
-    public int halfmove_cnt = 0;
-    public int fullmove_cnt = 0; 
-    public String EnPassantSquare = "";
+
+    // Zobrist tables
+    private long[][] pieceSquareTable;
+    private long[] sideToMoveTable;
+    private long[] castlingRightTable;
+    private long[] enPassantTable;
 
     // Empty board
     public Board() {
+        final Random rng = new Random(1234567);
+        pieceSquareTable = new long[12][128];  // 12 for each type of piece (6 white and 6 black), 128 for each square
+        sideToMoveTable = new long[2];  // 2 for white or black
+        castlingRightTable = new long[16];  // 16 for all combinations of castling rights
+        enPassantTable = new long[128];  // 128 for each square
+
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 128; j++) {
+                pieceSquareTable[i][j] = rng.nextLong();
+            }
+        }
+        for (int i = 0; i < 2; i++) {
+            sideToMoveTable[i] = rng.nextLong();
+        }
+        for (int i = 0; i < 16; i++) {
+            castlingRightTable[i] = rng.nextLong();
+        }
+        for (int i = 0; i < 128; i++) {
+            enPassantTable[i] = rng.nextLong();
+        }
     }
+
 
     // Parse FEN
     public Board(String fen) {
+        this();
         var tokens = fen.split(" ");
 
         var board_string = tokens[0];
@@ -109,59 +129,6 @@ public class Board {
             }
         }
     }
-    //Generates FEN based on the board
-    public String getFEN () {
-    	int Empty_Cnt = 0;
-    	String FEN = "";
-    	for (int i = 7; i >= 0; i--) {
-    		for(int j = 0; i < 8; i++) {
-    			 if(board[(i)*16 + j] != 0) {
-    	            	if (Empty_Cnt != 0 && board[(i)*16 + j+1] != 0) {
-    	            		char emptyNo = (char)Empty_Cnt;
-    	            		FEN += emptyNo;
-    	            		Empty_Cnt = 0;
-    	            	}
-    	            	FEN += Constants.pieceTypeOfPiece(board[(i)*16 + j]);
-    	            	if(board[(i)*16 + j+1] == 0) {
-    	            		char rank = (char)(i+1);
-    	            		FEN += rank;
-    	            	}
-    	            }
-    			 else {
-    				 Empty_Cnt += 1;
-    	            }
-    			 if (j == 7 && i != 0) {
-    				 FEN += '/';
-    			 }
-    		} 
-    	}
-    	if (side_to_move == 0) {
-    		FEN += " w ";
-    	}
-    	else {
-    		FEN += " b ";
-    	}
-    	if (wCastleK) {
-    		FEN +="K";
-    	}
-    	if (wCastleQ) {
-    		FEN +="Q";
-    	}
-    	if (bCastleK) {
-    		FEN +="k";
-    	}
-    	if (bCastleQ) {
-    		FEN +="q";
-    	}
-    	
-    	if (EnPassantSquare != "") {
-    		FEN += EnPassantSquare;
-    	}
-    	else
-    		FEN += " - ";
-    	
-    	return FEN;
-    }
 
     // Prettily print the board
     /*
@@ -198,6 +165,29 @@ public class Board {
 
         System.out.println();
         System.out.println("Side to move: " + (side_to_move == Constants.COLOR_WHITE ? "White" : "Black"));
+    }
+
+    public long computeZobristHash() {
+        long hash = 0L;
+
+        for (int i = 0; i < 128; i++) {
+            if (board[i] != 0) {  // if a piece is on the square
+                hash ^= pieceSquareTable[board[i] - 1][i];
+            }
+        }
+
+        hash ^= sideToMoveTable[side_to_move];
+        hash ^= castlingRightTable[castle_rights];
+
+        if (ep != -1) {  // if en passant is possible
+            hash ^= enPassantTable[ep];
+        }
+
+        return hash;
+    }
+
+    public boolean in_check() {
+        return isSquareAttacked(kingLocations[side_to_move], Constants.COLOR_OPPONENT[side_to_move]);
     }
 
     void removePiece(int piece, int source) {
@@ -246,26 +236,8 @@ public class Board {
 
         if (piece == PIECE_WHITE_KING) {
             kingLocations[0] = target;
-            //Updates castle rights for white
-            wCastleK = false;
-            wCastleQ = false;
-        } 
-        else if (piece == PIECE_BLACK_KING) {
+        } else if (piece == PIECE_BLACK_KING) {
             kingLocations[1] = target;
-            //Updates castle rights for black
-            bCastleK = false;
-            bCastleQ = false;
-        }
-        
-        //Update En Passant
-        if (move.isDoublePush() && side_to_move == 0) {
-        	EnPassantSquare = SQUARE_TO_STRING[source - 16] ; 
-        }
-        else if (move.isDoublePush() && side_to_move == 1) {
-        	EnPassantSquare = SQUARE_TO_STRING[source - 16]; 
-        }
-        else {
-        	EnPassantSquare = "";
         }
 
         switch (source) {
@@ -305,15 +277,6 @@ public class Board {
                     addPiece(PIECE_BLACK_ROOK, D8);
                 }
             }
-            //Updates Castle Booleans for FEN
-            if (side_to_move == 1) {
-            	bCastleK = false;
-            	bCastleQ = false;
-            }
-            else {
-            	wCastleK = false;
-            	wCastleQ = false;
-            }
         }
 
         if (pieceTypeOfPiece(piece) == PIECE_TYPE_PAWN) {
@@ -326,7 +289,6 @@ public class Board {
             } else {
                 removePiece(PIECE_WHITE_PAWN, target + NORTH);
             }
-            
         }
 
         if (isSquareAttacked(kingLocations[COLOR_OPPONENT[side_to_move]], side_to_move)) {
@@ -579,7 +541,7 @@ public class Board {
                     moves.add(new Move(
                             i, targetSquare, board[i],
                             false, false, false,
-                            0, false,true));
+                            0, false, true));
                 } else {
                     if (colorOfPiece(board[targetSquare]) != side_to_move) {
                         moves.add(new Move(

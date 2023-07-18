@@ -108,6 +108,8 @@ public class HCE {
         score += mat;
         score += psqt;
 
+        score += 3;  // tempo
+
         return score;
     }
 
