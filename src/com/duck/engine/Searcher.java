@@ -194,6 +194,17 @@ public class Searcher {
         if (depth <= 5 && HCE.evaluateForSTM(board) - depth * 70 >= beta) {
             return beta;
         }
+        
+        //Null Move Pruning 
+        if (!board.in_check()) {
+        	board.NullMove(board.side_to_move);
+        	int value = Negamax(board, depth, alpha, beta);
+        	board.NullMove(board.side_to_move);
+        	if (value > beta) {
+        		return value;
+        	}
+        }
+        
 
         // Generate Legal Moves
         var moves = board.genLegalMoves();

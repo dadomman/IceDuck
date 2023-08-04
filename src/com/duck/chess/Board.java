@@ -40,6 +40,14 @@ public class Board {
     private long[] sideToMoveTable;
     private long[] castlingRightTable;
     private long[] enPassantTable;
+    
+    //Null Move Function
+    public void NullMove(int side) {
+    	if (side == 0)
+    		side = 1;
+    	if (side == 1)
+    		side = 0;
+    }
 
     // Empty board
     public Board() {
