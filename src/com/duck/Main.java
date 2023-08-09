@@ -59,14 +59,7 @@ public class Main {
 
             board.makeMove(realMove);
             board.display();
-            searcher.ClearSearch();
-            var depth = 6;
-            System.out.println("Depth: " + depth);
-            int score = searcher.NegamaxRoot(board, depth);
-            System.out.println("Score: " + score);
-            System.out.println("Best Move: " + searcher.bestMove.toUCI());
-            System.out.println("Nodes: " + searcher.nodesSearched);
-            System.out.println();
+            searcher.IterativeDeepening(board, 6);
             board.makeMove(searcher.bestMove);
         }
         scanner.close();

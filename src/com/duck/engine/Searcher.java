@@ -5,7 +5,6 @@ import com.duck.chess.Constants;
 import com.duck.chess.Move;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 // Searcher Class
@@ -21,7 +20,8 @@ public class Searcher {
     public Move[][] KillerArray = new Move[MaxDepth][2];
     public int[][] HistoryArray = new int[128][128];
     //Uses HashMap class to create new table
-    HashMap<Long, TTEntry> transpositionTable = new HashMap<>();
+    HashMap<Long, TTEntry> transpositionTable = new HashMap<>(1 << 20);
+    public boolean inNull = false;
 
     // Clears PV table
     public void ClearSearch() {
@@ -75,6 +75,22 @@ public class Searcher {
         }
     }
 
+    public void IterativeDeepening(Board board, int maxDepth) {
+        // Not completed, currently just for debugging purposes
+        ClearSearch();
+        for (int depth = 1; depth <= maxDepth; depth++) {
+            System.out.println("Depth: " + depth);
+            int score = NegamaxRoot(board, depth);
+            System.out.println("Score: " + score);
+            System.out.println("Best Move: " + bestMove.toUCI());
+            System.out.println("Nodes: " + nodesSearched);
+            System.out.println("PV: ");
+            PrintPV();
+            System.out.println();
+            System.out.println();
+        }
+    }
+
     // Root Search Function
     public int NegamaxRoot(Board board, int depth) {
         ply = 0;
@@ -85,30 +101,50 @@ public class Searcher {
 
     // Quiescence Search Function
     public int Quiescence(Board board, int alpha, int beta) {
+        int staticEval = HCE.evaluateForSTM(board);
         if (ply >= MaxDepth) {
-            return HCE.evaluateForSTM(board);
+            return staticEval;
+        }
+
+        int value = -MateValue + ply;
+        value = staticEval;
+        if (value > beta) {
+            return beta;
+        }
+        if (value < alpha - 1000) {
+            return alpha;
+        }
+        if (value > alpha) {
+            alpha = value;
+        }
+
+        var hash = board.computeZobristHash();
+
+        TTEntry ttEntry = transpositionTable.get(hash);
+        Move hashMove = null;
+        if (ttEntry != null) {
+            var ttScore = ttEntry.score;
+            var ttFlag = ttEntry.flag;
+            hashMove = ttEntry.bestMove;
+
+            switch (ttFlag) {
+                case 0:
+                    return ttScore;
+                case 1:
+                    if (ttScore >= beta) return ttScore;
+                case 2:
+                    if (ttScore <= alpha) return ttScore;
+            }
         }
 
         ArrayList<Move> qmoves;
 
-        int value = -MateValue + ply;
-        if (board.in_check()) {
-            qmoves = board.genLegalMoves();
-            if (qmoves.isEmpty()) {
-                return -MateValue + ply;
-            }
-        } else {
-            value = HCE.evaluateForSTM(board);
-            if (value > beta) {
-                return beta;
-            }
-            if (value > alpha) {
-                alpha = value;
-            }
-            qmoves = board.genCaptureMoves();
+        qmoves = board.genCaptureMoves();
+        if (qmoves.isEmpty()) {
+            return staticEval;
         }
 
-        ScoreMoves(qmoves, board, null);
+        ScoreMoves(qmoves, board, hashMove);
         Quicksort(qmoves, 0, qmoves.size() - 1);
 
         for (var i = 0; i < qmoves.size(); i++) {
@@ -122,12 +158,12 @@ public class Searcher {
             if (score > value) {
                 value = score;
 
-                if (value > alpha) {
-                    alpha = value;
-
-                    if (alpha >= beta) {
-                        break;
+                if (score > alpha) {
+                    if (score >= beta) {
+                        return beta;
                     }
+
+                    alpha = score;
                 }
             }
         }
@@ -137,6 +173,8 @@ public class Searcher {
 
     // Recursive Negamax Search Function
     public int Negamax(Board board, int depth, int alpha, int beta) {
+        int original_alpha = alpha;
+
         if (ply >= MaxDepth) {
             return HCE.evaluateForSTM(board);
         }
@@ -154,16 +192,19 @@ public class Searcher {
             }
         }
 
+        boolean inCheck = board.in_check();
+
+        if (inCheck) {
+            depth += 1;
+        }
         // Horizon
         if (depth == 0) {
             return Quiescence(board, alpha, beta);
         }
 
-        if (board.in_check()) {
-            depth += 1;
-        }
+        var hash = board.computeZobristHash();
 
-        TTEntry ttEntry = transpositionTable.get(board.computeZobristHash());
+        TTEntry ttEntry = transpositionTable.get(hash);
         Move hashMove = null;
         if (ttEntry != null) {
             var ttScore = ttEntry.score;
@@ -190,21 +231,41 @@ public class Searcher {
             }
         }
 
-        //Reverse Futility Pruning
-        if (depth <= 5 && HCE.evaluateForSTM(board) - depth * 70 >= beta) {
-            return beta;
+        int staticEval = HCE.evaluateForSTM(board);
+
+
+        if (!inCheck) {
+            // Reverse Futility Pruning
+            // If we are at a low depth and the static eval is way higher than beta, we can safely return beta.
+            if (depth <= 5 && staticEval - depth * 70 >= beta) {
+                return beta;
+            }
+
+            // Null Move Pruning
+            // We only do NMP if:
+            // 1. We did not do a null move previously
+            // 2. Depth >= 3
+            // 3. Static eval is better than beta
+            // 4. We are not in pawn-only endgame, in which case zugzwang greatly affects the result.
+            // If satisfied, we search in [-beta, -beta+1] with a reduced depth.
+            if (!inNull && depth >= 3 && staticEval >= beta && board.hasNonPawns()) {
+                board.nullMove();
+                inNull = true;
+
+                // reduced depth
+                int r = Math.min(depth, 3 + depth / 3 + Math.min(4, (staticEval - beta) / 200));
+                int value = Negamax(board, depth - r, -beta, -beta + 1);
+
+                board.nullMove();
+                inNull = false;
+                if (value > beta) {
+                    // Found a mate, but we can't be sure that's actually possible
+                    if (value >= MateValue - 100) value = beta;
+                    return value;
+                }
+            }
         }
-        
-        //Null Move Pruning 
-        if (!board.in_check()) {
-        	board.NullMove(board.side_to_move);
-        	int value = Negamax(board, depth, alpha, beta);
-        	board.NullMove(board.side_to_move);
-        	if (value > beta) {
-        		return value;
-        	}
-        }
-        
+
 
         // Generate Legal Moves
         var moves = board.genLegalMoves();
@@ -216,6 +277,11 @@ public class Searcher {
         //Score and Sort Moves
         ScoreMoves(moves, board, hashMove);
         Quicksort(moves, 0, moves.size() - 1);
+//        if (ply == 0) {
+//            for (var m : moves) {
+//                System.out.println(m.toUCI() + " " + m.score);
+//            }
+//        }
 
         // Loop through all moves
         for (var i = 0; i < moves.size(); i++) {
@@ -227,18 +293,16 @@ public class Searcher {
             // Introduces Reduction Variable Based upon depth and index
             int reduction = 0;
             // We search the first few moves at full depth
-            if (!board.in_check() && depth >= 4 && i >= 4) {
-                reduction = (int) Math.floor(0.5 * Math.log(depth) * Math.log(i) + 0.8);
-            }
+//            if (!board.in_check() && depth >= 4 && i >= 4) {
+//                reduction = (int) Math.floor(0.43 * Math.log(depth) * Math.log(i) + 0.77);
+//            }
             // Get score from next Ply
             int newDepth = Math.max(0, Math.min(depth - 1, depth - reduction - 1));
             int score = -Negamax(board, newDepth, -beta, -alpha);
             ply--;
-            /*
-            if (ply == 0) {
-                System.out.println(m.toUCI() + ": " + score);
-            }
-             */
+//            if (ply == 0) {
+//                System.out.println(m.toUCI() + ": " + score);
+//            }
             board.unmakeMove();
 
             if (score > value) {
@@ -290,7 +354,7 @@ public class Searcher {
         }
 
         //Store position in transpositionTable
-        transpositionTable.put(board.computeZobristHash(), new TTEntry(value, value >= beta ? 1 : 2, depth, bestMove));
+        transpositionTable.put(hash, new TTEntry(value, value >= beta ? 1 : alpha != original_alpha ? 0 : 2, depth, bestMove));
 
         return value;
     }

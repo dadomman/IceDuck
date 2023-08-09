@@ -40,14 +40,6 @@ public class Board {
     private long[] sideToMoveTable;
     private long[] castlingRightTable;
     private long[] enPassantTable;
-    
-    //Null Move Function
-    public void NullMove(int side) {
-    	if (side == 0)
-    		side = 1;
-    	if (side == 1)
-    		side = 0;
-    }
 
     // Empty board
     public Board() {
@@ -81,7 +73,7 @@ public class Board {
 
         var board_string = tokens[0];
 
-        var sq = Constants.A8;
+        var sq = A8;
         var inc = 0;
         for (var c : board_string.toCharArray()) {
             if (sq < 0) {
@@ -94,22 +86,22 @@ public class Board {
                 inc += c - '0';
             } else {
                 switch (c) {
-                    case 'P' -> board[sq + inc] = Constants.PIECE_WHITE_PAWN;
-                    case 'N' -> board[sq + inc] = Constants.PIECE_WHITE_KNIGHT;
-                    case 'B' -> board[sq + inc] = Constants.PIECE_WHITE_BISHOP;
-                    case 'R' -> board[sq + inc] = Constants.PIECE_WHITE_ROOK;
-                    case 'Q' -> board[sq + inc] = Constants.PIECE_WHITE_QUEEN;
+                    case 'P' -> board[sq + inc] = PIECE_WHITE_PAWN;
+                    case 'N' -> board[sq + inc] = PIECE_WHITE_KNIGHT;
+                    case 'B' -> board[sq + inc] = PIECE_WHITE_BISHOP;
+                    case 'R' -> board[sq + inc] = PIECE_WHITE_ROOK;
+                    case 'Q' -> board[sq + inc] = PIECE_WHITE_QUEEN;
                     case 'K' -> {
-                        board[sq + inc] = Constants.PIECE_WHITE_KING;
+                        board[sq + inc] = PIECE_WHITE_KING;
                         kingLocations[0] = sq + inc;
                     }
-                    case 'p' -> board[sq + inc] = Constants.PIECE_BLACK_PAWN;
-                    case 'n' -> board[sq + inc] = Constants.PIECE_BLACK_KNIGHT;
-                    case 'b' -> board[sq + inc] = Constants.PIECE_BLACK_BISHOP;
-                    case 'r' -> board[sq + inc] = Constants.PIECE_BLACK_ROOK;
-                    case 'q' -> board[sq + inc] = Constants.PIECE_BLACK_QUEEN;
+                    case 'p' -> board[sq + inc] = PIECE_BLACK_PAWN;
+                    case 'n' -> board[sq + inc] = PIECE_BLACK_KNIGHT;
+                    case 'b' -> board[sq + inc] = PIECE_BLACK_BISHOP;
+                    case 'r' -> board[sq + inc] = PIECE_BLACK_ROOK;
+                    case 'q' -> board[sq + inc] = PIECE_BLACK_QUEEN;
                     case 'k' -> {
-                        board[sq + inc] = Constants.PIECE_BLACK_KING;
+                        board[sq + inc] = PIECE_BLACK_KING;
                         kingLocations[1] = sq + inc;
                     }
                     default -> {
@@ -121,19 +113,19 @@ public class Board {
 
         var color = tokens[1].charAt(0);
         if (color == 'w') {
-            side_to_move = Constants.COLOR_WHITE;
+            side_to_move = COLOR_WHITE;
         } else {
-            side_to_move = Constants.COLOR_BLACK;
+            side_to_move = COLOR_BLACK;
         }
 
         var castle_rights_string = tokens[2];
         castle_rights = 0;
         for (var c : castle_rights_string.toCharArray()) {
             switch (c) {
-                case 'K' -> castle_rights |= Constants.CASTLE_WHITE_K;
-                case 'Q' -> castle_rights |= Constants.CASTLE_WHITE_Q;
-                case 'k' -> castle_rights |= Constants.CASTLE_BLACK_K;
-                case 'q' -> castle_rights |= Constants.CASTLE_BLACK_Q;
+                case 'K' -> castle_rights |= CASTLE_WHITE_K;
+                case 'Q' -> castle_rights |= CASTLE_WHITE_Q;
+                case 'k' -> castle_rights |= CASTLE_BLACK_K;
+                case 'q' -> castle_rights |= CASTLE_BLACK_Q;
             }
         }
     }
@@ -162,7 +154,7 @@ public class Board {
             System.out.print(Character.toUpperCase(RANKS[i]));
             System.out.print(" | ");
             for (int j = 0; j < 8; j++) {
-                System.out.print(Constants.PIECE_TO_CHAR[board[i * 16 + j]] + " ");
+                System.out.print(PIECE_TO_CHAR[board[i * 16 + j]] + " ");
             }
             System.out.print("| ");
             System.out.print(Character.toUpperCase(RANKS[i]));
@@ -172,7 +164,7 @@ public class Board {
         System.out.println("    A B C D E F G H");
 
         System.out.println();
-        System.out.println("Side to move: " + (side_to_move == Constants.COLOR_WHITE ? "White" : "Black"));
+        System.out.println("Side to move: " + (side_to_move == COLOR_WHITE ? "White" : "Black"));
     }
 
     public long computeZobristHash() {
@@ -195,7 +187,7 @@ public class Board {
     }
 
     public boolean in_check() {
-        return isSquareAttacked(kingLocations[side_to_move], Constants.COLOR_OPPONENT[side_to_move]);
+        return isSquareAttacked(kingLocations[side_to_move], COLOR_OPPONENT[side_to_move]);
     }
 
     void removePiece(int piece, int source) {
@@ -208,6 +200,21 @@ public class Board {
         board[source] = piece;
 
         // Hashing
+    }
+
+    // Returns whether there are non-pawn pieces on the board
+    public boolean hasNonPawns() {
+        for (int i = 0; i < 128; i++) {
+            if (board[i] != 0 && board[i] != PIECE_WHITE_PAWN && board[i] != PIECE_BLACK_PAWN) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Null Move Function
+    public void nullMove() {
+        side_to_move = COLOR_OPPONENT[side_to_move];
     }
 
     public boolean makeMove(Move move) {
@@ -292,7 +299,7 @@ public class Board {
         }
 
         if (move.isEnPassant()) {
-            if (COLOR_OPPONENT[side_to_move] == Constants.COLOR_WHITE) {
+            if (COLOR_OPPONENT[side_to_move] == COLOR_WHITE) {
                 removePiece(PIECE_BLACK_PAWN, target + SOUTH);
             } else {
                 removePiece(PIECE_WHITE_PAWN, target + NORTH);
@@ -362,7 +369,7 @@ public class Board {
         }
 
         if (history.move.isEnPassant()) {
-            if (side_to_move == Constants.COLOR_WHITE) {
+            if (side_to_move == COLOR_WHITE) {
                 addPiece(PIECE_BLACK_PAWN, target + SOUTH);
             } else {
                 addPiece(PIECE_WHITE_PAWN, target + NORTH);
@@ -371,7 +378,7 @@ public class Board {
     }
 
     void genPawnQuietMoves(int i, ArrayList<Move> moves) {
-        var piece = pieceFromTypeAndColor(Constants.PIECE_TYPE_PAWN, side_to_move);
+        var piece = pieceFromTypeAndColor(PIECE_TYPE_PAWN, side_to_move);
         if (side_to_move == COLOR_WHITE) {
             if (board[i + NORTH] == 0) {
                 if (squareRank(i) == 6) {
@@ -432,7 +439,7 @@ public class Board {
     }
 
     void genPawnCaptureMoves(int i, ArrayList<Move> moves) {
-        var piece = pieceFromTypeAndColor(Constants.PIECE_TYPE_PAWN, side_to_move);
+        var piece = pieceFromTypeAndColor(PIECE_TYPE_PAWN, side_to_move);
         if (side_to_move == COLOR_WHITE) {
             var targetSquareLeft = i + NORTH + WEST;
             var targetSquareRight = i + NORTH + EAST;
