@@ -71,6 +71,10 @@ public class Main {
                 searcher.transpositionTable.clear();
                 continue;
             }
+            if (command.equals("isready")) {
+                System.out.println("readyok");
+                continue;
+            }
             if (command.equals("d")) {
                 board.display();
                 continue;
