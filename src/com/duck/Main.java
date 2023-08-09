@@ -8,27 +8,7 @@ import com.duck.engine.Searcher;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        /*
-        var board = new Board(Constants.FEN_DEFAULT);
-        board.display();
-
-        var searcher = new Searcher();
-
-        for (int depth = 1; depth <= 10; depth++) {
-            searcher.ClearSearch();
-            System.out.println("Depth: " + depth);
-            int score = searcher.NegamaxRoot(board, depth);
-            System.out.println("Score: " + score);
-            System.out.println("Best Move: " + searcher.bestMove.toUCI());
-            System.out.print("PV: ");
-            searcher.PrintPV();
-            System.out.println();
-            System.out.println("Nodes: " + searcher.nodesSearched);
-            System.out.println();
-        }
-        */
-
+    static void playHuman() {
         Scanner scanner = new Scanner(System.in);
         var searcher = new Searcher();
         var board = new Board(Constants.FEN_DEFAULT);
@@ -59,9 +39,81 @@ public class Main {
 
             board.makeMove(realMove);
             board.display();
-            searcher.IterativeDeepening(board, 6);
+            searcher.IterativeDeepening(board, 20, 10000);
             board.makeMove(searcher.bestMove);
         }
         scanner.close();
+    }
+
+    static void startUCI() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Iceduck Version 0.0.0");
+
+        Board board = new Board(Constants.FEN_DEFAULT);
+        Searcher searcher = new Searcher();
+
+        while (true) {
+            String[] input = scanner.nextLine().trim().split(" ");
+            if (input.length == 0) continue;
+            String command = input[0];
+            if (command.equals("quit")) {
+                break;
+            }
+            if (command.equals("uci")) {
+                System.out.println("id name Iceduck 0.0.0");
+                System.out.println("id author dadomman and SnowballSH");
+                System.out.println("uciok");
+                continue;
+            }
+            if (command.equals("ucinewgame")) {
+                board = new Board(Constants.FEN_DEFAULT);
+                searcher.ClearSearch();
+                searcher.transpositionTable.clear();
+                continue;
+            }
+            if (command.equals("d")) {
+                board.display();
+                continue;
+            }
+            if (command.equals("position")) {
+                if (input.length <= 2) continue;
+                int i = 2;
+                if (input[1].equals("fen")) {
+                    StringBuilder fen = new StringBuilder();
+                    while (i < input.length && !input[i].equals("moves")) {
+                        fen.append(input[i]).append(" ");
+                        i += 1;
+                    }
+                    board = new Board(fen.toString());
+                } else if (input[1].equals("startpos")) {
+                    board = new Board(Constants.FEN_DEFAULT);
+                }
+                if (i < input.length && input[i].equals("moves")) {
+                    i += 1;
+                    while (i < input.length) {
+                        var moves = board.genLegalMoves();
+                        boolean ok = false;
+                        for (Move move : moves) {
+                            if (move.toUCI().equals(input[i])) {
+                                board.makeMove(move);
+                                ok = true;
+                            }
+                        }
+                        if (!ok) break;
+                        i += 1;
+                    }
+                }
+                continue;
+            }
+            if (command.equals("go")) {
+                // TODO
+                searcher.IterativeDeepening(board, 20, 10000);
+            }
+        }
+        scanner.close();
+    }
+
+    public static void main(String[] args) {
+        startUCI();
     }
 }

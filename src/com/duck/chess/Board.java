@@ -36,10 +36,10 @@ public class Board {
     public Stack<History> moveStack = new Stack<>();
 
     // Zobrist tables
-    private long[][] pieceSquareTable;
-    private long[] sideToMoveTable;
-    private long[] castlingRightTable;
-    private long[] enPassantTable;
+    private final long[][] pieceSquareTable;
+    private final long[] sideToMoveTable;
+    private final long[] castlingRightTable;
+    private final long[] enPassantTable;
 
     // Empty board
     public Board() {

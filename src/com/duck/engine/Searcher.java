@@ -20,8 +20,12 @@ public class Searcher {
     public Move[][] KillerArray = new Move[MaxDepth][2];
     public int[][] HistoryArray = new int[128][128];
     //Uses HashMap class to create new table
-    HashMap<Long, TTEntry> transpositionTable = new HashMap<>(1 << 20);
+    public HashMap<Long, TTEntry> transpositionTable = new HashMap<>(1 << 20);
     public boolean inNull = false;
+
+    public long startTime;
+    public int maxMillis;
+    public boolean stop = false;
 
     // Clears PV table
     public void ClearSearch() {
@@ -75,20 +79,32 @@ public class Searcher {
         }
     }
 
-    public void IterativeDeepening(Board board, int maxDepth) {
+    boolean shouldStop() {
+        return stop || System.currentTimeMillis() - startTime >= maxMillis;
+    }
+
+    public void IterativeDeepening(Board board, int maxDepth, int maxTimeMillis) {
+        maxMillis = maxTimeMillis;
+        startTime = System.currentTimeMillis();
+        stop = false;
+        board.display();
+        Move lastBest = board.genLegalMoves().get(0);
         // Not completed, currently just for debugging purposes
         ClearSearch();
         for (int depth = 1; depth <= maxDepth; depth++) {
-            System.out.println("Depth: " + depth);
             int score = NegamaxRoot(board, depth);
-            System.out.println("Score: " + score);
-            System.out.println("Best Move: " + bestMove.toUCI());
-            System.out.println("Nodes: " + nodesSearched);
-            System.out.println("PV: ");
+            if (shouldStop()) {
+                System.out.println("bestmove " + lastBest.toUCI());
+                stop = true;
+                break;
+            }
+            lastBest = bestMove;
+            long elapsed = System.currentTimeMillis() - startTime;
+            System.out.print("info depth " + depth + " score " + score + " nodes " + nodesSearched + " time " + elapsed + " nps " + (elapsed == 0 ? nodesSearched : (int) ((float) nodesSearched / ((float) elapsed / 1000.0))) + " pv ");
             PrintPV();
             System.out.println();
-            System.out.println();
         }
+        bestMove = lastBest;
     }
 
     // Root Search Function
@@ -106,8 +122,7 @@ public class Searcher {
             return staticEval;
         }
 
-        int value = -MateValue + ply;
-        value = staticEval;
+        int value = staticEval;
         if (value > beta) {
             return beta;
         }
@@ -116,6 +131,11 @@ public class Searcher {
         }
         if (value > alpha) {
             alpha = value;
+        }
+
+        if (shouldStop()) {
+            stop = true;
+            return 0;
         }
 
         var hash = board.computeZobristHash();
@@ -155,6 +175,11 @@ public class Searcher {
             ply--;
             board.unmakeMove();
 
+            if (shouldStop()) {
+                stop = true;
+                return 0;
+            }
+
             if (score > value) {
                 value = score;
 
@@ -190,6 +215,11 @@ public class Searcher {
             if (rAlpha >= rBeta) {
                 return rAlpha;
             }
+        }
+
+        if (shouldStop()) {
+            stop = true;
+            return 0;
         }
 
         boolean inCheck = board.in_check();
@@ -293,9 +323,9 @@ public class Searcher {
             // Introduces Reduction Variable Based upon depth and index
             int reduction = 0;
             // We search the first few moves at full depth
-//            if (!board.in_check() && depth >= 4 && i >= 4) {
-//                reduction = (int) Math.floor(0.43 * Math.log(depth) * Math.log(i) + 0.77);
-//            }
+            if (!board.in_check() && depth >= 4 && i >= 4) {
+                reduction = (int) Math.floor(0.43 * Math.log(depth) * Math.log(i) + 0.77);
+            }
             // Get score from next Ply
             int newDepth = Math.max(0, Math.min(depth - 1, depth - reduction - 1));
             int score = -Negamax(board, newDepth, -beta, -alpha);
@@ -304,6 +334,11 @@ public class Searcher {
 //                System.out.println(m.toUCI() + ": " + score);
 //            }
             board.unmakeMove();
+
+            if (shouldStop()) {
+                stop = true;
+                return 0;
+            }
 
             if (score > value) {
                 value = score;
