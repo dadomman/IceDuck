@@ -51,6 +51,7 @@ public class Main {
 
         Board board = new Board(Constants.FEN_DEFAULT);
         Searcher searcher = new Searcher();
+        Thread thread = null;
 
         while (true) {
             String[] input = scanner.nextLine().trim().split(" ");
@@ -110,8 +111,32 @@ public class Main {
                 continue;
             }
             if (command.equals("go")) {
+                int movetime = 10000;
+                if (input.length >= 3) {
+                    if (input[1].equals("movetime")) {
+                        movetime = Math.max(10, Integer.parseInt(input[2]) - 20);  // overhead
+                    }
+                }
+                int searchTime = movetime;
+                Board finalBoard = board;
+                if (thread != null) {
+                    try {
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                thread = new Thread(() -> {
+                    searcher.IterativeDeepening(finalBoard, 20, searchTime);
+                });
+                thread.setDaemon(true);
+                thread.start();
                 // TODO
-                searcher.IterativeDeepening(board, 20, 10000);
+                continue;
+            }
+            if (command.equals("stop")) {
+                searcher.stop = true;
+                continue;
             }
         }
         scanner.close();

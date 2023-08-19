@@ -4,11 +4,23 @@ import com.duck.chess.Board;
 import com.duck.chess.Constants;
 import com.duck.chess.Move;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 // Searcher Class
 public class Searcher {
+    public static class MaxSizeHashMap<K, V> extends LinkedHashMap<K, V> {
+        private final int maxSize;
+
+        public MaxSizeHashMap(int maxSize) {
+            this.maxSize = maxSize;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() > maxSize;
+        }
+    }
+
     public static int MateValue = 999999;
     public static int MaxDepth = 256;
     public Move bestMove = null;
@@ -20,7 +32,7 @@ public class Searcher {
     public Move[][] KillerArray = new Move[MaxDepth][2];
     public int[][] HistoryArray = new int[128][128];
     //Uses HashMap class to create new table
-    public HashMap<Long, TTEntry> transpositionTable = new HashMap<>(1 << 20);
+    public HashMap<Long, TTEntry> transpositionTable = new MaxSizeHashMap<>(1 << 20);
     public boolean inNull = false;
 
     public long startTime;
@@ -33,9 +45,7 @@ public class Searcher {
             pvLength[i] = 0;
             KillerArray[i][0] = null;
             KillerArray[i][1] = null;
-            for (int j = 0; j < MaxDepth; j++) {
-                pvTable[i][j] = null;
-            }
+            Arrays.fill(pvTable[i], null);
         }
         for (int i = 0; i < HistoryArray.length; i++) {
             for (int j = 0; j < HistoryArray[0].length; j++) {
@@ -100,7 +110,7 @@ public class Searcher {
             }
             lastBest = bestMove;
             long elapsed = System.currentTimeMillis() - startTime;
-            System.out.print("info depth " + depth + " score " + score + " nodes " + nodesSearched + " time " + elapsed + " nps " + (elapsed == 0 ? nodesSearched : (int) ((float) nodesSearched / ((float) elapsed / 1000.0))) + " pv ");
+            System.out.print("info depth " + depth + " score cp " + score + " nodes " + nodesSearched + " time " + elapsed + " nps " + (elapsed == 0 ? nodesSearched : (int) ((float) nodesSearched / ((float) elapsed / 1000.0))) + " pv ");
             PrintPV();
             System.out.println();
         }
@@ -133,7 +143,7 @@ public class Searcher {
             alpha = value;
         }
 
-        if (shouldStop()) {
+        if ((nodesSearched & 127) == 0 && shouldStop()) {
             stop = true;
             return 0;
         }
@@ -217,7 +227,7 @@ public class Searcher {
             }
         }
 
-        if (shouldStop()) {
+        if ((nodesSearched & 127) == 0 && shouldStop()) {
             stop = true;
             return 0;
         }
