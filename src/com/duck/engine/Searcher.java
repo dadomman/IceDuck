@@ -104,8 +104,6 @@ public class Searcher {
         for (int depth = 1; depth <= maxDepth; depth++) {
             int score = NegamaxRoot(board, depth);
             if (shouldStop()) {
-                System.out.println("bestmove " + lastBest.toUCI());
-                stop = true;
                 break;
             }
             lastBest = bestMove;
@@ -114,6 +112,8 @@ public class Searcher {
             PrintPV();
             System.out.println();
         }
+        System.out.println("bestmove " + lastBest.toUCI());
+        stop = true;
         bestMove = lastBest;
     }
 
