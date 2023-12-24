@@ -2,4 +2,4 @@
 
 IceDuck is a UCI-compliant chess engine written in Java for educational purposes.
 
-Current ELO: 0
+Current ELO: ~1800
